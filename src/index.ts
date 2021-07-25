@@ -25,7 +25,7 @@ const packages = require('../package.json');
     console.log(val3);
 
 })();
-
+console.log("hell yeah!");
 // showData(6);
 
 
