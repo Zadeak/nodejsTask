@@ -28,40 +28,52 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const PopulateDb_1 = require("./PopulateDb");
 const database = __importStar(require("./database"));
-const express = require('express');
+const express = require("express");
 const cors = require("cors");
-const bodyParser = require('body-parser');
-const packages = require('../package.json');
+const bodyParser = require("body-parser");
+const packages = require("../package.json");
 // writeAirportsDataFromFile().then(()=>{
 //     database.airportsDb.forEach((data) => console.log(data));
 // });
 // const wat = writeAirport.then(()=>{
 //     database.airportsDb.forEach((data)=> {console.log(data)});
 // })
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    const val1 = yield PopulateDb_1.asyncWriteRoutesDataFromFile();
-    const val2 = yield PopulateDb_1.asyncWriteAirportsDataFromFile();
-    const val3 = yield database.routesDb.find({
-        where: route => route.StartAirportId === "3370"
-    });
-    console.log(val3);
-}))();
+// (async () => {
+//   const val1 = await asyncWriteRoutesDataFromFile();
+//   const val2 = await asyncWriteAirportsDataFromFile();
+//   const val3 = await database.routesDb.find({
+//     where: (route) => route.StartAirportId === "3370",
+//   });
+//   console.log(val3);
+// })();
+// console.log("hell yeah!");
 // showData(6);
 const port = process.env.port || 3000;
 const app = express();
-const apiRoot = '/api';
+const apiRoot = "/api";
 //configure app
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({ origin: /http:\/\/localhost/ }));
-app.options('*', cors());
+app.options("*", cors());
 // config routes
 const router = express.Router();
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
     res.send(`${packages.description} - ${packages.version}`);
 });
+// async dbquery endpoint
+router.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        var result = yield database.routesDb.find({
+            where: (route) => route.StartAirportId === "3370",
+        });
+        res.status(200).json(result);
+    }
+    catch (error) {
+        res.status(500).end(error);
+    }
+}));
 //register all our routes
 app.use(apiRoot, router);
 app.listen(port, () => {
