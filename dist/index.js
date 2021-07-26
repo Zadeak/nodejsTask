@@ -28,6 +28,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const PopulateDb_1 = require("./PopulateDb");
+const DataConverter_1 = require("./DataConverter");
 const database = __importStar(require("./database"));
 const express = require("express");
 const cors = require("cors");
@@ -45,8 +47,29 @@ const packages = require("../package.json");
 //   const val3 = await database.routesDb.find({
 //     where: (route) => route.StartAirportId === "3370",
 //   });
-//   console.log(val3);
+//   console.log(val3[0]);
+//   var arr: Array<string>=[];
+//   for( var i of val3){
+//     // console.log(i.DestinationAirportId);
+//     arr.push(i.DestinationAirportId.toString());
+//     // console.log(arr);
+//   }
+//   console.log(arr);
+//   var lol:Route = {StartAirportId:val3[0].StartAirportId, DestinationAirportId: arr};
+//   console.log(lol);
 // })();
+(() => __awaiter(void 0, void 0, void 0, function* () {
+    const val1 = yield PopulateDb_1.asyncWriteRoutesDataFromFile();
+    const val2 = yield PopulateDb_1.asyncWriteAirportsDataFromFile();
+    const val3 = yield database.routesDb.find({
+        where: (route) => route.StartAirportId === "3370",
+    });
+    // var value = readMyFile("./src/resources/routes.dat.txt");
+    // console.log(val3);
+    var route = DataConverter_1.convertToRoute(val3);
+    console.log(route.DestinationAirportId[10]);
+    database.routesDb.get("2968").then((data) => console.log(data));
+}))();
 // console.log("hell yeah!");
 // showData(6);
 const port = process.env.port || 3000;
@@ -79,4 +102,17 @@ app.use(apiRoot, router);
 app.listen(port, () => {
     console.log("server is up!");
 });
+function createRoute(val3) {
+    console.log(val3[0]);
+    var arr = [];
+    for (var i of val3) {
+        // console.log(i.DestinationAirportId);
+        arr.push(i.DestinationAirportId.toString());
+        // console.log(arr);
+    }
+    console.log(arr);
+    var lol = { StartAirportId: val3[0].StartAirportId, DestinationAirportId: arr };
+    // console.log(lol);
+    console.log(lol.DestinationAirportId[2]);
+}
 //# sourceMappingURL=index.js.map

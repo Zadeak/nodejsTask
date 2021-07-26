@@ -9,7 +9,13 @@ type Airport = {
   Longitude: number;
 };
 
-type Route = {
+type RouteDb = {
   StartAirportId: string;
   DestinationAirportId: string;
 };
+
+type Route = {
+  StartAirportId: string;
+  DestinationAirportId: Array<string>;
+
+}

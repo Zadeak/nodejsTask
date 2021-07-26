@@ -1,6 +1,6 @@
 import { Depot } from "depot-db";
 export const airportsDb = new Depot<Airport>("Airports");
-export const routesDb = new Depot<Route>("Routes");
+export const routesDb = new Depot<RouteDb>("Routes");
 
 
 

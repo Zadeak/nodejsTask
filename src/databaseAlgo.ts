@@ -1,32 +1,45 @@
 import { Edge } from "js-graph-algorithms";
+import * as database from "./database";
+import { asyncWriteAirportsDataFromFile, asyncWriteRoutesDataFromFile } from "./PopulateDb";
+
+
+(async () => {
+    const val1 = await asyncWriteRoutesDataFromFile();
+    const val2 = await asyncWriteAirportsDataFromFile();
+    const val3 = await database.routesDb.find({
+      where: (route) => route.StartAirportId === "3370",
+    });
+    console.log(val3);
+  })();
+  console.log("hell yeah!");
 
 type TestTYpe = {
   num: string;
   linkedArray: Array<string>;
 };
 
-var firstOne: TestTYpe = { num: "1", linkedArray: ["1", "1", "1"] };
+var firstOne: TestTYpe = { num: "1", linkedArray: ["1", "1"] };
 
-export function test() {
+export function test(depth:number) {
   //temp value
   var number = "2";
-  var depth = 0;
+  var depthCounter = 0;
   var tempListSize = 0;
 
   // console.log(depth);
 
-  var nodeList: Array<TestTYpe> = [firstOne];
-  var tempList: Array<TestTYpe> = [];
+  var nodeList: Array<any> = [firstOne];
+  var tempList: Array<any> = [];
 
-  while (depth != 3) {
+  while (depthCounter != depth) {
     // console.log("depth: " + depth);
 
-    for (var edge in nodeList.slice(-tempListSize)) {
+    for (var entry in nodeList.slice(-tempListSize)) {
       //   var nodeEdge = nodeList[edge];
       //   nodeEdge.label = "first";
       // получить список всех путей из кода
 
-      var extractedRoutes = nodeList[edge].linkedArray;
+      var extractedRoutes = nodeList[entry].linkedArray;
       // console.log("extractedRoute: " + nodeList[edge].linkedArray);
       for (var route in extractedRoutes) {
         // console.log("route: " + route);
@@ -35,7 +48,7 @@ export function test() {
 
         var newOne: TestTYpe = {
           num: number,
-          linkedArray: [number, number, number],
+          linkedArray: [number, number],
         };
         tempList.push(newOne);
         var n = Number.parseInt(number);
@@ -56,11 +69,11 @@ export function test() {
     nodeList.push.apply(nodeList, tempList);
 
     tempList = [];
-    depth++;
+    depthCounter++;
   }
 
   // console.log("final list:");
   nodeList.forEach((data) => console.log(data));
 }
 
-test();
+test(3);

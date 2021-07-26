@@ -48,4 +48,4 @@ function test(depth) {
 }
 exports.test = test;
 test(3);
-//# sourceMappingURL=testAlgorithm.js.map
+//# sourceMappingURL=bonesAlgo.js.map
