@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.showData = void 0;
-var jsgraphs = require('js-graph-algorithms');
+var jsgraphs = require("js-graph-algorithms");
 var g = new jsgraphs.WeightedDiGraph(8);
 g.addEdge(new jsgraphs.Edge(0, 1, 5.0));
 g.addEdge(new jsgraphs.Edge(0, 4, 9.0));
@@ -23,13 +23,13 @@ function showData(lastNode) {
     var dijkstra = new jsgraphs.Dijkstra(g, 0);
     var path = dijkstra.pathTo(lastNode);
     if (dijkstra.hasPathTo(lastNode) && path.length < 4) {
-        console.log('=====path from 0 to ' + lastNode + ' start==========');
+        console.log("=====path from 0 to " + lastNode + " start==========");
         for (var i = 0; i < path.length; ++i) {
             var e = path[i];
-            console.log(e.from() + ' => ' + e.to() + ': ' + e.weight);
+            console.log(e.from() + " => " + e.to() + ": " + e.weight);
         }
-        console.log('=====path from 0 to ' + lastNode + ' end==========');
-        console.log('=====distance: ' + dijkstra.distanceTo(lastNode) + '=========');
+        console.log("=====path from 0 to " + lastNode + " end==========");
+        console.log("=====distance: " + dijkstra.distanceTo(lastNode) + "=========");
     }
     else {
         console.log(`path to node ${lastNode} is absent or it takes more than 3 flight`);

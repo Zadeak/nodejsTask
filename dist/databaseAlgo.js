@@ -31,60 +31,89 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.test = void 0;
 const database = __importStar(require("./database"));
 const PopulateDb_1 = require("./PopulateDb");
+var jsgraphs = require("js-graph-algorithms");
+const fs = __importStar(require("fs"));
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    const val1 = yield PopulateDb_1.asyncWriteRoutesDataFromFile();
-    const val2 = yield PopulateDb_1.asyncWriteAirportsDataFromFile();
-    const val3 = yield database.routesDb.find({
-        where: (route) => route.StartAirportId === "3370",
-    });
-    console.log(val3);
+    yield PopulateDb_1.asyncWriteRoutesDataFromFile();
+    yield PopulateDb_1.asyncWriteAirportsDataFromFile();
+    var route = yield database.getRoute("2966");
+    console.log(route);
+    test(1, route);
 }))();
-console.log("hell yeah!");
-var firstOne = { num: "1", linkedArray: ["1", "1"] };
-function test(depth) {
-    //temp value
-    var number = "2";
-    var depthCounter = 0;
-    var tempListSize = 0;
-    // console.log(depth);
-    var nodeList = [firstOne];
-    var tempList = [];
-    while (depthCounter != depth) {
-        // console.log("depth: " + depth);
-        for (var entry in nodeList.slice(-tempListSize)) {
-            //   var nodeEdge = nodeList[edge];
-            //   nodeEdge.label = "first";
-            // получить список всех путей из кода
-            var extractedRoutes = nodeList[entry].linkedArray;
-            // console.log("extractedRoute: " + nodeList[edge].linkedArray);
-            for (var route in extractedRoutes) {
-                // console.log("route: " + route);
-                // какая-то работа с путями
-                // делаем edge | из edge -> route + weight
-                var newOne = {
-                    num: number,
-                    linkedArray: [number, number],
-                };
-                tempList.push(newOne);
-                var n = Number.parseInt(number);
-                n++;
-                number = n.toString();
-                // console.log("created object newOne: " + newOne.num);
-                // console.log(
-                //   "tempList affter addition: " +
-                //     tempList.forEach((data) => console.log(data))
-                // );
-            }
+function test(depth, startingPoint) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var edges = [];
+        for (var i of startingPoint.DestinationAirportId) {
+            const newLocal = new jsgraphs.Edge(startingPoint.StartAirportId, i, 5.0);
+            edges.push(newLocal);
         }
-        var tempListSize = tempList.length;
-        console.log("size: " + tempListSize);
-        nodeList.push.apply(nodeList, tempList);
-        tempList = [];
-        depthCounter++;
-    }
-    // console.log("final list:");
-    nodeList.forEach((data) => console.log(data));
+        // console.log(edges);
+        //
+        //temp value
+        var depthCounter = 0;
+        var tempListSize = 0;
+        // console.log(depth);
+        var nodeList = [startingPoint];
+        var tempList = [];
+        while (depthCounter != depth) {
+            // console.log("depth: " + depth);
+            for (var entry in nodeList.slice(-tempListSize)) {
+                //   var nodeEdge = nodeList[edge];
+                //   nodeEdge.label = "first";
+                // получить список всех путей из кода
+                var extractedRoutes = nodeList[entry].DestinationAirportId;
+                // console.log("extractedRoute: " + nodeList[edge].linkedArray);
+                for (var route in extractedRoutes) {
+                    var newRoute = yield database.getRoute(extractedRoutes[route]);
+                    // console.log("Array: newRoute"); ВАЖНО
+                    // console.dir(newRoute, { maxArrayLength: null }); ВАЖНО
+                    // newRoute.DestinationAirportId.pop();
+                    for (var i of newRoute.DestinationAirportId) {
+                        const newLocal = new jsgraphs.Edge(newRoute.StartAirportId, i, 5.0);
+                        edges.push(newLocal);
+                    }
+                    // console.log(extractedRoutes[route]);
+                    // console.log("route: " + route);
+                    // какая-то работа с путями
+                    // делаем edge | из edge -> route + weight
+                    tempList.push(newRoute);
+                    // console.log("created object newOne: " + newOne.num);
+                    // console.log(
+                    //   "tempList affter addition: " +
+                    //     tempList.forEach((data) => console.log(data))
+                    // );
+                }
+            }
+            var tempListSize = tempList.length;
+            // console.log("size: " + tempListSize);
+            // nodeList.push.apply(nodeList, tempList);
+            // nodeList.push(tempList);
+            nodeList = nodeList.concat(tempList);
+            tempList = [];
+            depthCounter++;
+        }
+        // console.log(edges);
+        var text = "";
+        for (var d of edges) {
+            var lol = JSON.stringify(d);
+            text.concat(lol + "\n");
+        }
+        console.log(text);
+        fs.writeFileSync("outputfile.txt", text);
+        let writeStream = fs.createWriteStream("outputfile.txt");
+        for (var d of edges) {
+            var lol = JSON.stringify(d);
+            writeStream.write(lol + "\n", "utf-8");
+        }
+        writeStream.on("finish", () => {
+            console.log("wrote all data to file");
+        });
+        writeStream.end();
+        console.log("Node list");
+        console.dir(nodeList, { maxArrayLength: null });
+        // console.log("final list:");
+        // nodeList.forEach((data) => console.log(data));
+    });
 }
 exports.test = test;
-test(3);
 //# sourceMappingURL=databaseAlgo.js.map

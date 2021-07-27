@@ -1,16 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertToRoute = void 0;
-function convertToRoute(val3) {
+exports.routeConverter = void 0;
+function routeConverter(routeDbArray) {
     var arr = [];
-    for (var i of val3) {
+    for (var i of routeDbArray) {
         arr.push(i.DestinationAirportId.toString());
     }
+    var ar = arr.filter((v, i, a) => a.indexOf(v) == i);
     var lol = {
-        StartAirportId: val3[0].StartAirportId,
-        DestinationAirportId: arr,
+        StartAirportId: routeDbArray[0].StartAirportId,
+        DestinationAirportId: ar,
     };
     return lol;
 }
-exports.convertToRoute = convertToRoute;
+exports.routeConverter = routeConverter;
 //# sourceMappingURL=DataConverter.js.map

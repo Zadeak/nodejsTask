@@ -1,9 +1,14 @@
 import { Depot } from "depot-db";
+import { routeConverter } from "./DataConverter";
 export const airportsDb = new Depot<Airport>("Airports");
 export const routesDb = new Depot<RouteDb>("Routes");
 
-
-
+export async function getRoute(airportId: string) {
+  const routeDbEntryArray = await routesDb.find({
+    where: (route) => route.StartAirportId === airportId,
+  });
+  return await routeConverter(routeDbEntryArray);
+}
 
 // // Define a document type
 // type Person = { firstname: string, lastname: string, age: number };
@@ -16,16 +21,6 @@ export const routesDb = new Depot<RouteDb>("Routes");
 // people.put("Jane", { firstname: "Jane", lastname: "Doe", age: 32 });
 // people.put("Tim", { firstname: "Tim", lastname: "Burton", age: 59 });
 // people.put("Tony", { firstname: "Stark", lastname: "Doe", age: 45 });
-
-
-
-
-
-
-
-
-
-
 
 // Query people
 // var person = people.find({

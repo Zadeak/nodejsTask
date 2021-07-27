@@ -4,7 +4,6 @@ import {
   asyncWriteRoutesDataFromFile,
   // readMyFile,
 } from "./PopulateDb";
-import{convertToRoute} from "./DataConverter";
 import * as database from "./database";
 
 const express = require("express");
@@ -46,27 +45,20 @@ const packages = require("../package.json");
   const val3 = await database.routesDb.find({
     where: (route) => route.StartAirportId === "3370",
   });
+
+  var route = await database.getRoute("3370");
+  // console.log(route);
+
+  // console.log(route);
   // var value = readMyFile("./src/resources/routes.dat.txt");
-  
 
   // console.log(val3);
-  var route = convertToRoute(val3);
-  console.log(route.DestinationAirportId[10]);
+  // route.DestinationAirportId.forEach((data) => console.log(data));
 
-  database.routesDb.get("2968").then((data: any)=> console.log(data));
-
+  // database.routesDb.get("2968").then((data: any) => console.log(data));
 })();
 
-
-
-
-
-
-
-
-
 // console.log("hell yeah!");
-
 
 // showData(6);
 
@@ -117,8 +109,10 @@ function createRoute(val3: RouteDb[]) {
   }
   console.log(arr);
 
-  var lol: Route = { StartAirportId: val3[0].StartAirportId, DestinationAirportId: arr };
+  var lol: Route = {
+    StartAirportId: val3[0].StartAirportId,
+    DestinationAirportId: arr,
+  };
   // console.log(lol);
   console.log(lol.DestinationAirportId[2]);
 }
-
