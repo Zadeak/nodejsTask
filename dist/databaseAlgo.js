@@ -32,10 +32,11 @@ exports.test = void 0;
 const database = __importStar(require("./database"));
 const PopulateDb_1 = require("./PopulateDb");
 var jsgraphs = require("js-graph-algorithms");
-const fs = __importStar(require("fs"));
+const geodist = require("geodist");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield PopulateDb_1.asyncWriteRoutesDataFromFile();
     yield PopulateDb_1.asyncWriteAirportsDataFromFile();
+    const testnum = yield database.routesDAO.count();
     var route = yield database.getRoute("2966");
     console.log(route);
     test(1, route);
@@ -43,11 +44,12 @@ const fs = __importStar(require("fs"));
 function test(depth, startingPoint) {
     return __awaiter(this, void 0, void 0, function* () {
         var edges = [];
-        for (var i of startingPoint.DestinationAirportId) {
-            const newLocal = new jsgraphs.Edge(startingPoint.StartAirportId, i, 5.0);
+        for (var it of startingPoint.DestinationAirportId) {
+            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(startingPoint.StartAirportId, it);
+            const newLocal = new jsgraphs.Edge(startingPoint.StartAirportId, it, calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon));
             edges.push(newLocal);
         }
-        // console.log(edges);
+        console.log(edges);
         //
         //temp value
         var depthCounter = 0;
@@ -68,8 +70,13 @@ function test(depth, startingPoint) {
                     // console.log("Array: newRoute"); ВАЖНО
                     // console.dir(newRoute, { maxArrayLength: null }); ВАЖНО
                     // newRoute.DestinationAirportId.pop();
-                    for (var i of newRoute.DestinationAirportId) {
-                        const newLocal = new jsgraphs.Edge(newRoute.StartAirportId, i, 5.0);
+                    // for (var i of newRoute.DestinationAirportId) {
+                    //   const newLocal = new jsgraphs.Edge(newRoute.StartAirportId, i, 5.0);
+                    //   edges.push(newLocal);
+                    // }
+                    for (var it of newRoute.DestinationAirportId) {
+                        var { startAirportLat, startAirportLon, destAirportLat, destAirportLon, } = yield getCoorinates(newRoute.StartAirportId, it);
+                        const newLocal = new jsgraphs.Edge(newRoute.StartAirportId, it, calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon));
                         edges.push(newLocal);
                     }
                     // console.log(extractedRoutes[route]);
@@ -86,34 +93,62 @@ function test(depth, startingPoint) {
             }
             var tempListSize = tempList.length;
             // console.log("size: " + tempListSize);
-            // nodeList.push.apply(nodeList, tempList);
+            nodeList.push.apply(nodeList, tempList);
             // nodeList.push(tempList);
-            nodeList = nodeList.concat(tempList);
+            // nodeList = nodeList.concat(tempList);
             tempList = [];
             depthCounter++;
         }
         // console.log(edges);
-        var text = "";
-        for (var d of edges) {
-            var lol = JSON.stringify(d);
-            text.concat(lol + "\n");
-        }
-        console.log(text);
-        fs.writeFileSync("outputfile.txt", text);
-        let writeStream = fs.createWriteStream("outputfile.txt");
-        for (var d of edges) {
-            var lol = JSON.stringify(d);
-            writeStream.write(lol + "\n", "utf-8");
-        }
-        writeStream.on("finish", () => {
-            console.log("wrote all data to file");
-        });
-        writeStream.end();
-        console.log("Node list");
-        console.dir(nodeList, { maxArrayLength: null });
+        // var text = "";
+        // for (var d of edges) {
+        //   var lol = JSON.stringify(d);
+        //   text.concat(lol + "\n");
+        // }
+        // console.log(text);
+        // fs.writeFileSync("outputfile.txt", text);
+        // let writeStream = fs.createWriteStream("outputfile.txt");
+        // for (var d of edges) {
+        //   var lol = JSON.stringify(d);
+        //   writeStream.write(lol + "\n", "utf-8");
+        // }
+        // writeStream.on("finish", () => {
+        //   console.log("wrote all data to file");
+        // });
+        // writeStream.end();
+        // console.dir(nodeList, { maxArrayLength: null });
+        // console.log("Node list");
+        //   console.dir(nodeList, { maxArrayLength: null });
+        //   // nodeList.forEach((data)=>console.log(data));
+        // function returnDataName(element:Route,index:any,array:any){
+        //  return(element.StartAirportId)
+        // }
+        //   const filteredList = nodeList.filter(returnDataName);
+        //   console.log(filteredList);
+        //   for(var i of filteredList){
+        //     console.log(i.StartAirportId);
+        //   }
+        console.log(edges);
+        //
+        // var str = JSON.stringify(nodeList);
+        // console.log(str);
         // console.log("final list:");
         // nodeList.forEach((data) => console.log(data));
     });
 }
 exports.test = test;
+function getCoorinates(startingPoint, destinationPoint) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var startAirport = yield database.getAirportDataById(Number.parseInt(startingPoint));
+        var destAirport = yield database.getAirportDataById(Number.parseInt(destinationPoint));
+        var startAirportLat = startAirport.Latitude;
+        var startAirportLon = startAirport.Longitude;
+        var destAirportLat = destAirport.Latitude;
+        var destAirportLon = destAirport.Longitude;
+        return { startAirportLat, startAirportLon, destAirportLat, destAirportLon };
+    });
+}
+function calculateDistance(firstLat, firstLon, secondlat, secondLon) {
+    return geodist({ lat: firstLat, lon: firstLon }, { lat: secondlat, lon: secondLon }, { exact: true, unit: "km" });
+}
 //# sourceMappingURL=databaseAlgo.js.map

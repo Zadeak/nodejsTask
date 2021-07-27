@@ -42,7 +42,7 @@ const packages = require("../package.json");
 (async () => {
   const val1 = await asyncWriteRoutesDataFromFile();
   const val2 = await asyncWriteAirportsDataFromFile();
-  const val3 = await database.routesDb.find({
+  const val3 = await database.routesDAO.find({
     where: (route) => route.StartAirportId === "3370",
   });
 
@@ -83,7 +83,7 @@ router.get("/", (req: any, res: any) => {
 // async dbquery endpoint
 router.get("/test", async (req: any, res: any) => {
   try {
-    var result = await database.routesDb.find({
+    var result = await database.routesDAO.find({
       where: (route) => route.StartAirportId === "3370",
     });
 
@@ -104,7 +104,7 @@ function createRoute(val3: RouteDb[]) {
   var arr: Array<string> = [];
   for (var i of val3) {
     // console.log(i.DestinationAirportId);
-    arr.push(i.DestinationAirportId.toString());
+    arr.push(i.DestinationAirportId);
     // console.log(arr);
   }
   console.log(arr);

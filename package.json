@@ -16,6 +16,7 @@
     "cors": "^2.8.5",
     "depot-db": "^2.0.9",
     "express": "^4.17.1",
+    "geodist": "^0.2.1",
     "js-graph-algorithms": "^1.0.18",
     "lite-server": "^2.6.1"
   },

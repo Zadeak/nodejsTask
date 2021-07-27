@@ -4,14 +4,13 @@ exports.routeConverter = void 0;
 function routeConverter(routeDbArray) {
     var arr = [];
     for (var i of routeDbArray) {
-        arr.push(i.DestinationAirportId.toString());
+        arr.push(i.DestinationAirportId);
     }
-    var ar = arr.filter((v, i, a) => a.indexOf(v) == i);
-    var lol = {
+    var ar = arr.filter((v, i, a) => a.indexOf(v) == i).filter((value, index, array) => value !== "\\N");
+    return {
         StartAirportId: routeDbArray[0].StartAirportId,
         DestinationAirportId: ar,
     };
-    return lol;
 }
 exports.routeConverter = routeConverter;
 //# sourceMappingURL=DataConverter.js.map

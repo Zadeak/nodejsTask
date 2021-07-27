@@ -1,13 +1,53 @@
 import { Depot } from "depot-db";
 import { routeConverter } from "./DataConverter";
-export const airportsDb = new Depot<Airport>("Airports");
-export const routesDb = new Depot<RouteDb>("Routes");
+export const airportsDAO = new Depot<Airport>("Airports");
+export const routesDAO = new Depot<RouteDb>("Routes");
 
 export async function getRoute(airportId: string) {
-  const routeDbEntryArray = await routesDb.find({
-    where: (route) => route.StartAirportId === airportId,
-  });
-  return await routeConverter(routeDbEntryArray);
+  var routeDbEntryArray:any;
+
+  try {
+    routeDbEntryArray = await routesDAO.find({
+      where: (route) => route.StartAirportId === airportId,
+    });
+  } catch(e){
+    console.log(e);
+  }
+  return routeConverter(routeDbEntryArray);
+  }
+
+
+export async function getAirportDataByCode(airportId: string) {
+
+  var airportData;
+    airportData = await airportsDAO.find({
+      where: (airport) => airport.IATA === airportId,
+    });
+
+    if(airportData.length === 0){
+      airportData = await airportsDAO.find({
+        where: (airport) => airport.ICAO === airportId,
+      });
+    }
+
+  return airportData;
+}
+export async function getAirportDataById(airportId: number) {
+
+    const airportData = await airportsDAO.get(airportId.toString());
+    return airportData;
+
+  // const airportData = await airportsDb.find({
+  //   where: (airport) => airport.Id === airportId,
+  // });
+
+}
+
+export async function writeRoutes(startAirportId:string, destinationAirportId:string) {
+  routesDAO.put(startAirportId, {
+  StartAirportId: startAirportId,
+  DestinationAirportId: destinationAirportId,
+});
 }
 
 // // Define a document type

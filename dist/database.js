@@ -9,20 +9,60 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRoute = exports.routesDb = exports.airportsDb = void 0;
+exports.writeRoutes = exports.getAirportDataById = exports.getAirportDataByCode = exports.getRoute = exports.routesDAO = exports.airportsDAO = void 0;
 const depot_db_1 = require("depot-db");
 const DataConverter_1 = require("./DataConverter");
-exports.airportsDb = new depot_db_1.Depot("Airports");
-exports.routesDb = new depot_db_1.Depot("Routes");
+exports.airportsDAO = new depot_db_1.Depot("Airports");
+exports.routesDAO = new depot_db_1.Depot("Routes");
 function getRoute(airportId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const routeDbEntryArray = yield exports.routesDb.find({
-            where: (route) => route.StartAirportId === airportId,
-        });
-        return yield DataConverter_1.routeConverter(routeDbEntryArray);
+        var routeDbEntryArray;
+        try {
+            routeDbEntryArray = yield exports.routesDAO.find({
+                where: (route) => route.StartAirportId === airportId,
+            });
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return DataConverter_1.routeConverter(routeDbEntryArray);
     });
 }
 exports.getRoute = getRoute;
+function getAirportDataByCode(airportId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var airportData;
+        airportData = yield exports.airportsDAO.find({
+            where: (airport) => airport.IATA === airportId,
+        });
+        if (airportData.length === 0) {
+            airportData = yield exports.airportsDAO.find({
+                where: (airport) => airport.ICAO === airportId,
+            });
+        }
+        return airportData;
+    });
+}
+exports.getAirportDataByCode = getAirportDataByCode;
+function getAirportDataById(airportId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const airportData = yield exports.airportsDAO.get(airportId.toString());
+        return airportData;
+        // const airportData = await airportsDb.find({
+        //   where: (airport) => airport.Id === airportId,
+        // });
+    });
+}
+exports.getAirportDataById = getAirportDataById;
+function writeRoutes(startAirportId, destinationAirportId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        exports.routesDAO.put(startAirportId, {
+            StartAirportId: startAirportId,
+            DestinationAirportId: destinationAirportId,
+        });
+    });
+}
+exports.writeRoutes = writeRoutes;
 // // Define a document type
 // type Person = { firstname: string, lastname: string, age: number };
 // // Initialize a people database (Stored in /databases/people)

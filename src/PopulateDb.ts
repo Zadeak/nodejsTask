@@ -18,7 +18,7 @@ function createStreamReader(path: string) {
 }
 
 export function asyncWriteAirportsDataFromFile(): Promise<void> {
-  return new Promise((resolve, rejects) => {
+  return new Promise((resolve) => {
     createStreamReader("./src/resources/airports.dat.txt").on(
       "line",
       (l: string) => {
@@ -27,11 +27,11 @@ export function asyncWriteAirportsDataFromFile(): Promise<void> {
         var name = tokens[1];
         var city = tokens[2];
         var country = tokens[3];
-        var iata = tokens[4];
-        var icao = tokens[5];
+        var iata = tokens[4].slice(1, 4);
+        var icao = tokens[5].slice(1, 5);
         var latitude = tokens[6];
         var longitude = tokens[7];
-        database.airportsDb.put(nr.toString(), {
+        database.airportsDAO.put(nr.toString(), {
           Id: nr,
           Name: name,
           City: city,
@@ -47,6 +47,24 @@ export function asyncWriteAirportsDataFromFile(): Promise<void> {
   });
 }
 
+// export function asyncWriteRoutesDataFromFile(): Promise<void> {
+//   return new Promise((resolve, rejects) => {
+//     createStreamReader("./src/resources/routes.dat.txt").on(
+//       "line",
+//       (l: string) => {
+//         var tokens = l.split(",");
+//         var startAirportId = tokens[3];
+//         var destinationAirportId = tokens[5];
+//         database.routesDAO.put(startAirportId, {
+//           StartAirportId: startAirportId,
+//           DestinationAirportId: destinationAirportId,
+//         });
+//       }
+//     );
+//     resolve();
+//   });
+// }
+
 export function asyncWriteRoutesDataFromFile(): Promise<void> {
   return new Promise((resolve, rejects) => {
     createStreamReader("./src/resources/routes.dat.txt").on(
@@ -55,51 +73,49 @@ export function asyncWriteRoutesDataFromFile(): Promise<void> {
         var tokens = l.split(",");
         var startAirportId = tokens[3];
         var destinationAirportId = tokens[5];
-        database.routesDb.put(startAirportId, {
-          StartAirportId: startAirportId,
-          DestinationAirportId: destinationAirportId,
-        });
+        database.writeRoutes(startAirportId, destinationAirportId);
       }
     );
     resolve();
+    // rejects(console.log("what"));
   });
 }
 
-export function asyncWriteTestData(): Promise<void> {
-  return new Promise((resolve, rejects) => {
-    database.routesDb.put("test_1", {
-      StartAirportId: "test_1",
-      DestinationAirportId: "test_2",
-    });
+// export function asyncWriteTestData(): Promise<void> {
+//   return new Promise((resolve, rejects) => {
+//     database.routesDb.put("test_1", {
+//       StartAirportId: "test_1",
+//       DestinationAirportId: "test_2",
+//     });
 
-    database.routesDb.put("test_1", {
-      StartAirportId: "test_1",
-      DestinationAirportId: "test_3",
-    });
-    database.routesDb.put("test_2", {
-      StartAirportId: "test_2",
-      DestinationAirportId: "test_3",
-    });
-    database.routesDb.put("test_2", {
-      StartAirportId: "test_2",
-      DestinationAirportId: "test_7",
-    });
-    database.routesDb.put("test_3", {
-      StartAirportId: "test_3",
-      DestinationAirportId: "test_4",
-    });
-    database.routesDb.put("test_4", {
-      StartAirportId: "test_4",
-      DestinationAirportId: "test_5",
-    });
-    database.routesDb.put("test_7", {
-      StartAirportId: "test_7",
-      DestinationAirportId: "test_5",
-    });
-    console.log("done writing test data");
-    resolve();
-  });
-}
+//     database.routesDb.put("test_1", {
+//       StartAirportId: "test_1",
+//       DestinationAirportId: "test_3",
+//     });
+//     database.routesDb.put("test_2", {
+//       StartAirportId: "test_2",
+//       DestinationAirportId: "test_3",
+//     });
+//     database.routesDb.put("test_2", {
+//       StartAirportId: "test_2",
+//       DestinationAirportId: "test_7",
+//     });
+//     database.routesDb.put("test_3", {
+//       StartAirportId: "test_3",
+//       DestinationAirportId: "test_4",
+//     });
+//     database.routesDb.put("test_4", {
+//       StartAirportId: "test_4",
+//       DestinationAirportId: "test_5",
+//     });
+//     database.routesDb.put("test_7", {
+//       StartAirportId: "test_7",
+//       DestinationAirportId: "test_5",
+//     });
+//     console.log("done writing test data");
+//     resolve();
+//   });
+// }
 
 // export async function readMyFile(filePath:any) {
 //   fs.readFile(filePath,"utf8", (error,data)=>{
