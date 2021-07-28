@@ -1,21 +1,59 @@
-import { Edge } from "js-graph-algorithms";
+import * as jsGraph from "js-graph-algorithms";
 import * as database from "./database";
 import {
   asyncWriteAirportsDataFromFile,
   asyncWriteRoutesDataFromFile,
 } from "./PopulateDb";
-var jsgraphs = require("js-graph-algorithms");
 import * as fs from "fs";
+import { showData } from "./Graph";
 
 const geodist = require("geodist");
 
+
+// var testArray = [[0,1,5],[1,2,7]];
+// var g = new jsGrapg.WeightedDiGraph(200);
+
+// for( var testArrayData of testArray){
+//   var startdes = testArrayData[0];
+//   var endDest = testArrayData[1];
+//   var dist = testArrayData[2];
+//   g.addEdge(new jsGrapg.Edge(startdes,endDest,dist));
+// }
+
+// console.log(g);
+
+//  showData(g,2);
+
+function addtoG(g:jsGraph.WeightedDiGraph, edge:jsGraph.Edge){
+  g.addEdge(edge)
+return g;
+}
+
 (async () => {
+
   await asyncWriteRoutesDataFromFile();
   await asyncWriteAirportsDataFromFile();
-  const testnum = await database.routesDAO.count();
+  // const testnum = await database.routesDAO.count();
   var route = await database.getRoute("2966");
   console.log(route);
-  test(1, route);
+  var edges = await test(1, route);
+  
+  // const testArray = [[0,1,5],[1,2,3],[2,4,5]];
+
+  // var g = new jsGraph.WeightedDiGraph(testArray.length);
+
+  // for (const testArrayData of testArray){
+  //   g.addEdge(new jsGraph.Edge(testArrayData[0], testArrayData[1],testArrayData[2]))
+  // }
+
+  // addtoG(g, new jsGraph.Edge(0, 1, 2));
+
+  // console.log(g);
+  // showData(g, "373")
+  // console.log("");
+
+
+
 })();
 
 export async function test(depth: number, startingPoint: Route) {
@@ -24,19 +62,31 @@ export async function test(depth: number, startingPoint: Route) {
     var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } =
       await getCoorinates(startingPoint.StartAirportId, it);
 
-    const newLocal = new jsgraphs.Edge(
-      startingPoint.StartAirportId,
-      it,
-      calculateDistance(
-        startAirportLat,
-        startAirportLon,
-        destAirportLat,
-        destAirportLon
-      )
-    );
-    edges.push(newLocal);
+      const newLocale = [
+        Number.parseInt(startingPoint.StartAirportId),
+        Number.parseInt(it),
+        calculateDistance(
+          startAirportLat,
+          startAirportLon,
+          destAirportLat,
+          destAirportLon
+        )
+      ] 
+    edges.push(newLocale);
+
+    var g = new jsGraph.WeightedDiGraph(edges.length);
+
+    for (const testArrayData of edges){
+      g.addEdge(new jsGraph.Edge(testArrayData[0], testArrayData[1],testArrayData[2]))
+    }
+  
+    addtoG(g, new jsGraph.Edge(0, 1, 2));
+
+
+
   }
   console.log(edges);
+
 
   //
   //temp value
@@ -79,9 +129,9 @@ export async function test(depth: number, startingPoint: Route) {
             destAirportLon,
           } = await getCoorinates(newRoute.StartAirportId, it);
 
-          const newLocal = new jsgraphs.Edge(
-            newRoute.StartAirportId,
-            it,
+          const newLocal = new jsGraph.Edge(
+            Number.parseInt(newRoute.StartAirportId),
+            Number.parseInt(it),
             calculateDistance(
               startAirportLat,
               startAirportLon,
@@ -156,6 +206,7 @@ export async function test(depth: number, startingPoint: Route) {
   // console.log(str);
   // console.log("final list:");
   // nodeList.forEach((data) => console.log(data));
+  return edges;
 }
 
 async function getCoorinates(startingPoint: string, destinationPoint: string) {
@@ -177,7 +228,7 @@ function calculateDistance(
   firstLon: number,
   secondlat: number,
   secondLon: number
-) {
+) : number {
   return geodist(
     { lat: firstLat, lon: firstLon },
     { lat: secondlat, lon: secondLon },
