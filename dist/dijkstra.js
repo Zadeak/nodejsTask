@@ -91,26 +91,4 @@ exports.Dijkstra = Dijkstra;
 // dijkstra.addVertex(new Vertex("F", [{ nameOfVertex: "D", weight: 2 }, { nameOfVertex: "G", weight: 3 }, { nameOfVertex: "Z", weight: 3 }], 1));
 // // dijkstra.addVertex(new Vertex("G", [{ nameOfVertex: "D", weight: 10 }, { nameOfVertex: "E", weight: 5 }, { nameOfVertex: "F", weight: 3 }], 1));
 // console.log(dijkstra.findShortestWay("A", "F"));
-const graphology_shortest_path_1 = require("graphology-shortest-path");
-const Graph = require('graphology');
-const graph = new Graph();
-var testArr = ['John', 'Martha', 'Lillian', 'Methy'];
-for (var arrData of testArr) {
-    graph.addNode(arrData);
-}
-// graph.addNode('John');
-// graph.addNode('Martha');
-// graph.addNode('Lillian');
-// graph.addNode('Methy');
-graph.addEdge("John", "Martha", { weight: 1 });
-graph.addEdge("John", "Lillian", { weight: 4 });
-graph.addEdge("Lillian", "Methy", { weight: 3 });
-console.log('Number of nodes', graph.order);
-console.log('Number of edges', graph.size);
-graph.forEachNode((node) => {
-    graph.forEachNeighbor(node, (neighbor) => console.log(node, neighbor));
-});
-const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, "John", "Methy", "weight");
-console.log("he");
-console.log(path.toString());
 //# sourceMappingURL=dijkstra.js.map
