@@ -27,146 +27,97 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.test = void 0;
-const jsGraph = __importStar(require("js-graph-algorithms"));
 const database = __importStar(require("./database"));
 const PopulateDb_1 = require("./PopulateDb");
 const geodist = require("geodist");
-// var testArray = [[0,1,5],[1,2,7]];
-// var g = new jsGrapg.WeightedDiGraph(200);
-// for( var testArrayData of testArray){
-//   var startdes = testArrayData[0];
-//   var endDest = testArrayData[1];
-//   var dist = testArrayData[2];
-//   g.addEdge(new jsGrapg.Edge(startdes,endDest,dist));
-// }
-// console.log(g);
-//  showData(g,2);
-function addtoG(g, edge) {
-    g.addEdge(edge);
-    return g;
+const graphology_shortest_path_1 = require("graphology-shortest-path");
+const graphology_1 = __importDefault(require("graphology")); // may be problems?
+function readPath(stringArray) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var LenghtCounter;
+        // TODO: maybe it is better to save a->b in km in database as table?
+        for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
+            const from = stringArray[indexof];
+            const to = stringArray[indexof + 1];
+            console.log("From: " + from + "To: " + to);
+            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(from, to);
+            const distance = calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon);
+            LenghtCounter = +distance;
+        }
+        return LenghtCounter;
+    });
 }
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield PopulateDb_1.asyncWriteRoutesDataFromFile();
     yield PopulateDb_1.asyncWriteAirportsDataFromFile();
-    // const testnum = await database.routesDAO.count();
     var route = yield database.getRoute("2966");
-    console.log(route);
-    var edges = yield test(1, route);
-    // const testArray = [[0,1,5],[1,2,3],[2,4,5]];
-    // var g = new jsGraph.WeightedDiGraph(testArray.length);
-    // for (const testArrayData of testArray){
-    //   g.addEdge(new jsGraph.Edge(testArrayData[0], testArrayData[1],testArrayData[2]))
-    // }
-    // addtoG(g, new jsGraph.Edge(0, 1, 2));
-    // console.log(g);
-    // showData(g, "373")
-    // console.log("");
+    //503, 2912,9823 - not found
+    var path = yield test(3, route, "2990");
+    var distance = yield readPath(path.split(","));
+    console.log(distance);
 }))();
-function test(depth, startingPoint) {
+function test(depth, startingPoint, endpoint) {
     return __awaiter(this, void 0, void 0, function* () {
-        var edges = [];
-        for (var it of startingPoint.DestinationAirportId) {
-            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(startingPoint.StartAirportId, it);
-            const newLocale = [
-                Number.parseInt(startingPoint.StartAirportId),
-                Number.parseInt(it),
-                calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon)
-            ];
-            edges.push(newLocale);
-            var g = new jsGraph.WeightedDiGraph(edges.length);
-            for (const testArrayData of edges) {
-                g.addEdge(new jsGraph.Edge(testArrayData[0], testArrayData[1], testArrayData[2]));
-            }
-            addtoG(g, new jsGraph.Edge(0, 1, 2));
-        }
-        console.log(edges);
-        //
-        //temp value
+        const graph = new graphology_1.default();
         var depthCounter = 0;
         var tempListSize = 0;
-        // console.log(depth);
         var nodeList = [startingPoint];
         var tempList = [];
+        graph.addNode(startingPoint.StartAirportId);
         while (depthCounter != depth) {
-            // console.log("depth: " + depth);
-            for (var entry in nodeList.slice(-tempListSize)) {
-                //   var nodeEdge = nodeList[edge];
-                //   nodeEdge.label = "first";
-                // получить список всех путей из кода
-                var extractedRoutes = nodeList[entry].DestinationAirportId;
-                // console.log("extractedRoute: " + nodeList[edge].linkedArray);
-                for (var route in extractedRoutes) {
-                    var newRoute = yield database.getRoute(extractedRoutes[route]);
-                    // console.log("Array: newRoute"); ВАЖНО
-                    // console.dir(newRoute, { maxArrayLength: null }); ВАЖНО
-                    // newRoute.DestinationAirportId.pop();
-                    // for (var i of newRoute.DestinationAirportId) {
-                    //   const newLocal = new jsgraphs.Edge(newRoute.StartAirportId, i, 5.0);
-                    //   edges.push(newLocal);
-                    // }
-                    for (var it of newRoute.DestinationAirportId) {
-                        var { startAirportLat, startAirportLon, destAirportLat, destAirportLon, } = yield getCoorinates(newRoute.StartAirportId, it);
-                        const newLocal = new jsGraph.Edge(Number.parseInt(newRoute.StartAirportId), Number.parseInt(it), calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon));
-                        edges.push(newLocal);
+            for (var entry of nodeList.slice(-tempListSize)) {
+                var extractedRoutes = entry.DestinationAirportId;
+                for (var route of extractedRoutes) {
+                    //move to function
+                    try {
+                        graph.addNode(route);
                     }
-                    // console.log(extractedRoutes[route]);
-                    // console.log("route: " + route);
-                    // какая-то работа с путями
-                    // делаем edge | из edge -> route + weight
+                    catch (error) {
+                        continue;
+                    }
+                    if (route === "9823") {
+                        console.log("Checking for 9823");
+                    }
+                    try {
+                        var newRoute = yield database.getRoute(route);
+                    }
+                    catch (error) {
+                        console.log(error);
+                        console.log(route);
+                        return "";
+                    }
+                    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon, } = yield getCoorinates(entry.StartAirportId, route);
+                    //move to fun?
+                    graph.addEdge(entry.StartAirportId, route, {
+                        weight: calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
+                    });
                     tempList.push(newRoute);
-                    // console.log("created object newOne: " + newOne.num);
-                    // console.log(
-                    //   "tempList affter addition: " +
-                    //     tempList.forEach((data) => console.log(data))
-                    // );
+                    //move to function
+                    try {
+                        const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight");
+                        console.log(path.toString());
+                        return path.toString();
+                    }
+                    catch (error) {
+                        // console.log(error);
+                        continue;
+                    }
                 }
             }
             var tempListSize = tempList.length;
-            // console.log("size: " + tempListSize);
             nodeList.push.apply(nodeList, tempList);
-            // nodeList.push(tempList);
-            // nodeList = nodeList.concat(tempList);
             tempList = [];
             depthCounter++;
         }
-        // console.log(edges);
-        // var text = "";
-        // for (var d of edges) {
-        //   var lol = JSON.stringify(d);
-        //   text.concat(lol + "\n");
-        // }
-        // console.log(text);
-        // fs.writeFileSync("outputfile.txt", text);
-        // let writeStream = fs.createWriteStream("outputfile.txt");
-        // for (var d of edges) {
-        //   var lol = JSON.stringify(d);
-        //   writeStream.write(lol + "\n", "utf-8");
-        // }
-        // writeStream.on("finish", () => {
-        //   console.log("wrote all data to file");
-        // });
-        // writeStream.end();
-        // console.dir(nodeList, { maxArrayLength: null });
-        // console.log("Node list");
-        //   console.dir(nodeList, { maxArrayLength: null });
-        //   // nodeList.forEach((data)=>console.log(data));
-        // function returnDataName(element:Route,index:any,array:any){
-        //  return(element.StartAirportId)
-        // }
-        //   const filteredList = nodeList.filter(returnDataName);
-        //   console.log(filteredList);
-        //   for(var i of filteredList){
-        //     console.log(i.StartAirportId);
-        //   }
-        console.log(edges);
-        //
-        // var str = JSON.stringify(nodeList);
-        // console.log(str);
-        // console.log("final list:");
-        // nodeList.forEach((data) => console.log(data));
-        return edges;
+        //check if path exist
+        return graphology_shortest_path_1.dijkstra
+            .bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight")
+            .toString();
     });
 }
 exports.test = test;
@@ -183,5 +134,16 @@ function getCoorinates(startingPoint, destinationPoint) {
 }
 function calculateDistance(firstLat, firstLon, secondlat, secondLon) {
     return geodist({ lat: firstLat, lon: firstLon }, { lat: secondlat, lon: secondLon }, { exact: true, unit: "km" });
+}
+function addEdges(graph, point) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (var it of point.DestinationAirportId) {
+            graph.addNode(it);
+            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(point.StartAirportId, it);
+            graph.addEdge(point.StartAirportId, it, {
+                weight: calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
+            });
+        }
+    });
 }
 //# sourceMappingURL=databaseAlgo.js.map

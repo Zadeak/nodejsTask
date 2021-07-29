@@ -24,6 +24,7 @@ function getRoute(airportId) {
         }
         catch (e) {
             console.log(e);
+            console.log("Key: " + airportId);
         }
         return DataConverter_1.routeConverter(routeDbEntryArray);
     });
