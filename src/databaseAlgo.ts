@@ -8,7 +8,9 @@ import * as fs from "fs";
 import { showData } from "./Graph";
 
 const geodist = require("geodist");
+import {dijkstra} from 'graphology-shortest-path';
 
+const Graph = require('graphology');
 
 // var testArray = [[0,1,5],[1,2,7]];
 // var g = new jsGrapg.WeightedDiGraph(200);
@@ -24,10 +26,7 @@ const geodist = require("geodist");
 
 //  showData(g,2);
 
-function addtoG(g:jsGraph.WeightedDiGraph, edge:jsGraph.Edge){
-  g.addEdge(edge)
-return g;
-}
+
 
 (async () => {
 
@@ -53,41 +52,24 @@ return g;
   // console.log("");
 
 
+  
+
 
 })();
 
 export async function test(depth: number, startingPoint: Route) {
-  var edges = [];
+  const graph = new Graph();
+  graph.addNode(startingPoint.StartAirportId)
   for (var it of startingPoint.DestinationAirportId) {
     var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } =
       await getCoorinates(startingPoint.StartAirportId, it);
-
-      const newLocale = [
-        Number.parseInt(startingPoint.StartAirportId),
-        Number.parseInt(it),
-        calculateDistance(
-          startAirportLat,
-          startAirportLon,
-          destAirportLat,
-          destAirportLon
-        )
-      ] 
-    edges.push(newLocale);
-
-    var g = new jsGraph.WeightedDiGraph(edges.length);
-
-    for (const testArrayData of edges){
-      g.addEdge(new jsGraph.Edge(testArrayData[0], testArrayData[1],testArrayData[2]))
-    }
-  
-    addtoG(g, new jsGraph.Edge(0, 1, 2));
-
-
-
+      graph.addEdge("John","Martha", {weight: calculateDistance(
+        startAirportLat,
+        startAirportLon,
+        destAirportLat,
+        destAirportLon
+      )})
   }
-  console.log(edges);
-
-
   //
   //temp value
   var depthCounter = 0;
@@ -105,6 +87,7 @@ export async function test(depth: number, startingPoint: Route) {
       //   var nodeEdge = nodeList[edge];
       //   nodeEdge.label = "first";
       // получить список всех путей из кода
+      graph.addNode(entry)
 
       var extractedRoutes = nodeList[entry].DestinationAirportId;
       // console.log("extractedRoute: " + nodeList[edge].linkedArray);
