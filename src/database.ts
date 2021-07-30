@@ -8,6 +8,14 @@ export async function getRoute(airportId: string) {
   var routeDbEntryArray: any;
 
   try {
+    routeDbEntryArray = await routeObjectDao.get(airportId);
+    console.log("found in routeObject table");
+    return routeDbEntryArray;
+  } catch (e) {
+    console.log(airportId + " not found in routeObject Table");
+  }
+
+  try {
     routeDbEntryArray = await routesDAO.find({
       where: (route) => route.StartAirportId === airportId,
     });
@@ -45,7 +53,7 @@ export async function writeRoutes(
   startAirportId: string,
   destinationAirportId: string
 ) {
-  routesDAO.put(startAirportId, {
+  routesDAO.put(startAirportId.toString(), {
     StartAirportId: startAirportId.toString(),
     DestinationAirportId: destinationAirportId,
   });

@@ -19,6 +19,14 @@ function getRoute(airportId) {
     return __awaiter(this, void 0, void 0, function* () {
         var routeDbEntryArray;
         try {
+            routeDbEntryArray = yield exports.routeObjectDao.get(airportId);
+            console.log("found in routeObject table");
+            return routeDbEntryArray;
+        }
+        catch (e) {
+            console.log(airportId + " not found in routeObject Table");
+        }
+        try {
             routeDbEntryArray = yield exports.routesDAO.find({
                 where: (route) => route.StartAirportId === airportId,
             });
@@ -58,7 +66,7 @@ function getAirportDataById(airportId) {
 exports.getAirportDataById = getAirportDataById;
 function writeRoutes(startAirportId, destinationAirportId) {
     return __awaiter(this, void 0, void 0, function* () {
-        exports.routesDAO.put(startAirportId, {
+        exports.routesDAO.put(startAirportId.toString(), {
             StartAirportId: startAirportId.toString(),
             DestinationAirportId: destinationAirportId,
         });
