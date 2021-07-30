@@ -97,21 +97,38 @@ export async function test(
           ),
         });
 
+        if (route === endpoint) {
+          console.log("added point == endpoint");
+          try {
+            const path = dijkstra.bidirectional(
+              graph,
+              startingPoint.StartAirportId,
+              endpoint,
+              "weight"
+            );
+            console.log(path.toString());
+            return path.toString();
+          } catch (error) {
+            // console.log(error);
+            continue;
+          }
+        }
+
         tempList.push(newRoute);
         //move to function
-        try {
-          const path = dijkstra.bidirectional(
-            graph,
-            startingPoint.StartAirportId,
-            endpoint,
-            "weight"
-          );
-          console.log(path.toString());
-          return path.toString();
-        } catch (error) {
-          // console.log(error);
-          continue;
-        }
+        // try {
+        //   const path = dijkstra.bidirectional(
+        //     graph,
+        //     startingPoint.StartAirportId,
+        //     endpoint,
+        //     "weight"
+        //   );
+        //   console.log(path.toString());
+        //   return path.toString();
+        // } catch (error) {
+        //   // console.log(error);
+        //   continue;
+        // }
       }
     }
 

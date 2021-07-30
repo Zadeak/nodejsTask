@@ -97,17 +97,33 @@ function test(depth, startingPoint, endpoint) {
                     graph.addEdge(entry.StartAirportId, route, {
                         weight: calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
                     });
+                    if (route === endpoint) {
+                        console.log("added point == endpoint");
+                        try {
+                            const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight");
+                            console.log(path.toString());
+                            return path.toString();
+                        }
+                        catch (error) {
+                            // console.log(error);
+                            continue;
+                        }
+                    }
                     tempList.push(newRoute);
                     //move to function
-                    try {
-                        const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight");
-                        console.log(path.toString());
-                        return path.toString();
-                    }
-                    catch (error) {
-                        // console.log(error);
-                        continue;
-                    }
+                    // try {
+                    //   const path = dijkstra.bidirectional(
+                    //     graph,
+                    //     startingPoint.StartAirportId,
+                    //     endpoint,
+                    //     "weight"
+                    //   );
+                    //   console.log(path.toString());
+                    //   return path.toString();
+                    // } catch (error) {
+                    //   // console.log(error);
+                    //   continue;
+                    // }
                 }
             }
             var tempListSize = tempList.length;
