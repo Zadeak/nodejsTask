@@ -34,14 +34,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.test = void 0;
 const database = __importStar(require("./database"));
 const PopulateDb_1 = require("./PopulateDb");
-const geodist = require("geodist");
 const graphology_shortest_path_1 = require("graphology-shortest-path");
 const graphology_1 = __importDefault(require("graphology")); // may be problems?
+const helperfunctions_1 = require("./helperfunctions");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     console.log(new Date());
     yield PopulateDb_1.populateRoutesDb();
     yield PopulateDb_1.asyncWriteAirportsDataFromFile();
-    var route = yield database.getRoute("6337");
+    var route = yield database.getRoute("6334");
     console.log(route);
     //503, 2912,9823 - not found
     var path = yield test(5, route, "2912");
@@ -49,7 +49,7 @@ const graphology_1 = __importDefault(require("graphology")); // may be problems?
         console.log("path is not possible with 3 stops");
     }
     else {
-        var distance = yield readPath(path.split(","));
+        var distance = yield helperfunctions_1.readPath(path.split(","));
         console.log(distance);
     }
     console.log(new Date());
@@ -74,10 +74,10 @@ function test(depth, startingPoint, endpoint) {
                         continue;
                     }
                     var newRoute = yield database.getRoute(route);
-                    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon, } = yield getCoorinates(entry.StartAirportId, route);
+                    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon, } = yield helperfunctions_1.getCoorinates(entry.StartAirportId, route);
                     //move to fun?
                     graph.addEdge(entry.StartAirportId, route, {
-                        weight: calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
+                        weight: helperfunctions_1.calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
                     });
                     // if (route === endpoint) {
                     //   console.log("added point == endpoint");
@@ -118,44 +118,4 @@ function test(depth, startingPoint, endpoint) {
     });
 }
 exports.test = test;
-function getCoorinates(startingPoint, destinationPoint) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var startAirport = yield database.getAirportDataById(Number.parseInt(startingPoint));
-        var destAirport = yield database.getAirportDataById(Number.parseInt(destinationPoint));
-        var startAirportLat = startAirport.Latitude;
-        var startAirportLon = startAirport.Longitude;
-        var destAirportLat = destAirport.Latitude;
-        var destAirportLon = destAirport.Longitude;
-        return { startAirportLat, startAirportLon, destAirportLat, destAirportLon };
-    });
-}
-function calculateDistance(firstLat, firstLon, secondlat, secondLon) {
-    return geodist({ lat: firstLat, lon: firstLon }, { lat: secondlat, lon: secondLon }, { exact: true, unit: "km" });
-}
-function addEdges(graph, point) {
-    return __awaiter(this, void 0, void 0, function* () {
-        for (var it of point.DestinationAirportId) {
-            graph.addNode(it);
-            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(point.StartAirportId, it);
-            graph.addEdge(point.StartAirportId, it, {
-                weight: calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
-            });
-        }
-    });
-}
-function readPath(stringArray) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var LenghtCounter;
-        // TODO: maybe it is better to save a->b in km in database as table?
-        for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
-            const from = stringArray[indexof];
-            const to = stringArray[indexof + 1];
-            console.log("From: " + from + "To: " + to);
-            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(from, to);
-            const distance = calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon);
-            LenghtCounter = +distance;
-        }
-        return LenghtCounter;
-    });
-}
 //# sourceMappingURL=databaseAlgo.js.map

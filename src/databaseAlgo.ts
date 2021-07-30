@@ -5,19 +5,18 @@ import {
   asyncWriteRoutesDataFromFile,
   populateRoutesDb,
 } from "./PopulateDb";
-import * as fs from "fs";
 
-const geodist = require("geodist");
 import { dijkstra } from "graphology-shortest-path";
 
 import Graph from "graphology"; // may be problems?
+import { calculateDistance, getCoorinates, readPath } from "./helperfunctions";
 
 (async () => {
   console.log(new Date());
   await populateRoutesDb();
   await asyncWriteAirportsDataFromFile();
 
-  var route = await database.getRoute("6337");
+  var route = await database.getRoute("6334");
   console.log(route);
   //503, 2912,9823 - not found
   var path = await test(5, route, "2912");
@@ -117,67 +116,4 @@ export async function test(
   }
   //check if path exist
   return `path from ${startingPoint} to ${endpoint} is not found`;
-}
-
-async function getCoorinates(startingPoint: string, destinationPoint: string) {
-  var startAirport = await database.getAirportDataById(
-    Number.parseInt(startingPoint)
-  );
-  var destAirport = await database.getAirportDataById(
-    Number.parseInt(destinationPoint)
-  );
-  var startAirportLat = startAirport.Latitude;
-  var startAirportLon = startAirport.Longitude;
-  var destAirportLat = destAirport.Latitude;
-  var destAirportLon = destAirport.Longitude;
-  return { startAirportLat, startAirportLon, destAirportLat, destAirportLon };
-}
-
-function calculateDistance(
-  firstLat: number,
-  firstLon: number,
-  secondlat: number,
-  secondLon: number
-): number {
-  return geodist(
-    { lat: firstLat, lon: firstLon },
-    { lat: secondlat, lon: secondLon },
-    { exact: true, unit: "km" }
-  );
-}
-
-async function addEdges(graph: Graph, point: Route) {
-  for (var it of point.DestinationAirportId) {
-    graph.addNode(it);
-
-    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } =
-      await getCoorinates(point.StartAirportId, it);
-    graph.addEdge(point.StartAirportId, it, {
-      weight: calculateDistance(
-        startAirportLat,
-        startAirportLon,
-        destAirportLat,
-        destAirportLon
-      ),
-    });
-  }
-}
-async function readPath(stringArray: string[]) {
-  var LenghtCounter;
-  // TODO: maybe it is better to save a->b in km in database as table?
-  for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
-    const from = stringArray[indexof];
-    const to = stringArray[indexof + 1];
-    console.log("From: " + from + "To: " + to);
-    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } =
-      await getCoorinates(from, to);
-    const distance = calculateDistance(
-      startAirportLat,
-      startAirportLon,
-      destAirportLat,
-      destAirportLon
-    );
-    LenghtCounter = +distance;
-  }
-  return LenghtCounter;
 }
