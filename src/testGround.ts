@@ -45,6 +45,10 @@ routesReader.on("line", (l: string) => {
   var tokens = l.split(",");
   var startAirportId = tokens[3];
   var destinationAirportId = tokens[5];
+  if (startAirportId === undefined) {
+    console.log("true");
+    return;
+  }
   routesDAO.put(l, {
     StartAirportId: startAirportId.toString(),
     DestinationAirportId: destinationAirportId,

@@ -37,30 +37,17 @@ const PopulateDb_1 = require("./PopulateDb");
 const geodist = require("geodist");
 const graphology_shortest_path_1 = require("graphology-shortest-path");
 const graphology_1 = __importDefault(require("graphology")); // may be problems?
-function readPath(stringArray) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var LenghtCounter;
-        // TODO: maybe it is better to save a->b in km in database as table?
-        for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
-            const from = stringArray[indexof];
-            const to = stringArray[indexof + 1];
-            console.log("From: " + from + "To: " + to);
-            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(from, to);
-            const distance = calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon);
-            LenghtCounter = +distance;
-        }
-        return LenghtCounter;
-    });
-}
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    yield PopulateDb_1.asyncWriteRoutesDataFromFile();
+    console.log(new Date());
+    yield PopulateDb_1.populateRoutesDb();
     yield PopulateDb_1.asyncWriteAirportsDataFromFile();
-    var route = yield database.getRoute("2966");
+    var route = yield database.getRoute("6334");
     console.log(route);
     //503, 2912,9823 - not found
-    var path = yield test(3, route, "2990");
+    var path = yield test(5, route, "2912");
     var distance = yield readPath(path.split(","));
     console.log(distance);
+    console.log(new Date());
 }))();
 function test(depth, startingPoint, endpoint) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -85,6 +72,9 @@ function test(depth, startingPoint, endpoint) {
                         console.log("Checking for 9823");
                     }
                     try {
+                        if (route === undefined) {
+                            console.log("here!");
+                        }
                         var newRoute = yield database.getRoute(route);
                     }
                     catch (error) {
@@ -97,33 +87,33 @@ function test(depth, startingPoint, endpoint) {
                     graph.addEdge(entry.StartAirportId, route, {
                         weight: calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
                     });
-                    if (route === endpoint) {
-                        console.log("added point == endpoint");
-                        try {
-                            const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight");
-                            console.log(path.toString());
-                            return path.toString();
-                        }
-                        catch (error) {
-                            // console.log(error);
-                            continue;
-                        }
-                    }
-                    tempList.push(newRoute);
-                    //move to function
-                    // try {
-                    //   const path = dijkstra.bidirectional(
-                    //     graph,
-                    //     startingPoint.StartAirportId,
-                    //     endpoint,
-                    //     "weight"
-                    //   );
-                    //   console.log(path.toString());
-                    //   return path.toString();
-                    // } catch (error) {
-                    //   // console.log(error);
-                    //   continue;
+                    // if (route === endpoint) {
+                    //   console.log("added point == endpoint");
+                    //   try {
+                    //     const path = dijkstra.bidirectional(
+                    //       graph,
+                    //       startingPoint.StartAirportId,
+                    //       endpoint,
+                    //       "weight"
+                    //     );
+                    //     console.log(path.toString());
+                    //     return path.toString();
+                    //   } catch (error) {
+                    //     // console.log(error);
+                    //     continue;
+                    //   }
                     // }
+                    //move to function
+                    tempList.push(newRoute);
+                    try {
+                        const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight");
+                        console.log(path.toString());
+                        return path.toString();
+                    }
+                    catch (error) {
+                        // console.log(error);
+                        continue;
+                    }
                 }
             }
             var tempListSize = tempList.length;
@@ -161,6 +151,21 @@ function addEdges(graph, point) {
                 weight: calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
             });
         }
+    });
+}
+function readPath(stringArray) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var LenghtCounter;
+        // TODO: maybe it is better to save a->b in km in database as table?
+        for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
+            const from = stringArray[indexof];
+            const to = stringArray[indexof + 1];
+            console.log("From: " + from + "To: " + to);
+            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(from, to);
+            const distance = calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon);
+            LenghtCounter = +distance;
+        }
+        return LenghtCounter;
     });
 }
 //# sourceMappingURL=databaseAlgo.js.map

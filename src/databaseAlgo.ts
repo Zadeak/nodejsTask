@@ -3,45 +3,27 @@ import * as database from "./database";
 import {
   asyncWriteAirportsDataFromFile,
   asyncWriteRoutesDataFromFile,
+  populateRoutesDb,
 } from "./PopulateDb";
 import * as fs from "fs";
-import { showData } from "./Graph";
 
 const geodist = require("geodist");
 import { dijkstra } from "graphology-shortest-path";
 
 import Graph from "graphology"; // may be problems?
 
-async function readPath(stringArray: string[]) {
-  var LenghtCounter;
-  // TODO: maybe it is better to save a->b in km in database as table?
-  for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
-    const from = stringArray[indexof];
-    const to = stringArray[indexof + 1];
-    console.log("From: " + from + "To: " + to);
-    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } =
-      await getCoorinates(from, to);
-    const distance = calculateDistance(
-      startAirportLat,
-      startAirportLon,
-      destAirportLat,
-      destAirportLon
-    );
-    LenghtCounter = +distance;
-  }
-  return LenghtCounter;
-}
-
 (async () => {
-  await asyncWriteRoutesDataFromFile();
+  console.log(new Date());
+  await populateRoutesDb();
   await asyncWriteAirportsDataFromFile();
 
-  var route = await database.getRoute("2966");
+  var route = await database.getRoute("6334");
   console.log(route);
   //503, 2912,9823 - not found
-  var path = await test(3, route, "2990");
+  var path = await test(5, route, "2912");
   var distance = await readPath(path.split(","));
   console.log(distance);
+  console.log(new Date());
 })();
 
 export async function test(
@@ -97,38 +79,39 @@ export async function test(
           ),
         });
 
-        if (route === endpoint) {
-          console.log("added point == endpoint");
-          try {
-            const path = dijkstra.bidirectional(
-              graph,
-              startingPoint.StartAirportId,
-              endpoint,
-              "weight"
-            );
-            console.log(path.toString());
-            return path.toString();
-          } catch (error) {
-            // console.log(error);
-            continue;
-          }
-        }
+        // if (route === endpoint) {
+        //   console.log("added point == endpoint");
+        //   try {
+        //     const path = dijkstra.bidirectional(
+        //       graph,
+        //       startingPoint.StartAirportId,
+        //       endpoint,
+        //       "weight"
+        //     );
+        //     console.log(path.toString());
+        //     return path.toString();
+        //   } catch (error) {
+        //     // console.log(error);
+        //     continue;
+        //   }
+        // }
+
+        //move to function
 
         tempList.push(newRoute);
-        //move to function
-        // try {
-        //   const path = dijkstra.bidirectional(
-        //     graph,
-        //     startingPoint.StartAirportId,
-        //     endpoint,
-        //     "weight"
-        //   );
-        //   console.log(path.toString());
-        //   return path.toString();
-        // } catch (error) {
-        //   // console.log(error);
-        //   continue;
-        // }
+        try {
+          const path = dijkstra.bidirectional(
+            graph,
+            startingPoint.StartAirportId,
+            endpoint,
+            "weight"
+          );
+          console.log(path.toString());
+          return path.toString();
+        } catch (error) {
+          // console.log(error);
+          continue;
+        }
       }
     }
 
@@ -185,4 +168,23 @@ async function addEdges(graph: Graph, point: Route) {
       ),
     });
   }
+}
+async function readPath(stringArray: string[]) {
+  var LenghtCounter;
+  // TODO: maybe it is better to save a->b in km in database as table?
+  for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
+    const from = stringArray[indexof];
+    const to = stringArray[indexof + 1];
+    console.log("From: " + from + "To: " + to);
+    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } =
+      await getCoorinates(from, to);
+    const distance = calculateDistance(
+      startAirportLat,
+      startAirportLon,
+      destAirportLat,
+      destAirportLon
+    );
+    LenghtCounter = +distance;
+  }
+  return LenghtCounter;
 }

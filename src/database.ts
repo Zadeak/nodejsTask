@@ -53,7 +53,7 @@ export async function writeRoutes(
   startAirportId: string,
   destinationAirportId: string
 ) {
-  routesDAO.put(startAirportId.toString(), {
+  await routesDAO.put(startAirportId.toString(), {
     StartAirportId: startAirportId.toString(),
     DestinationAirportId: destinationAirportId,
   });

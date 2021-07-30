@@ -66,7 +66,7 @@ function getAirportDataById(airportId) {
 exports.getAirportDataById = getAirportDataById;
 function writeRoutes(startAirportId, destinationAirportId) {
     return __awaiter(this, void 0, void 0, function* () {
-        exports.routesDAO.put(startAirportId.toString(), {
+        yield exports.routesDAO.put(startAirportId.toString(), {
             StartAirportId: startAirportId.toString(),
             DestinationAirportId: destinationAirportId,
         });

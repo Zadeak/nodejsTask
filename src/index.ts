@@ -1,4 +1,3 @@
-import { showData } from "./Graph";
 import {
   asyncWriteAirportsDataFromFile,
   asyncWriteRoutesDataFromFile,

@@ -21,8 +21,10 @@
     "graphology": "^0.20.0",
     "graphology-shortest-path": "^1.4.1",
     "graphology-types": "^0.19.3",
+    "install": "^0.13.0",
     "js-graph-algorithms": "^1.0.18",
-    "lite-server": "^2.6.1"
+    "lite-server": "^2.6.1",
+    "npm": "^7.20.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
