@@ -41,12 +41,17 @@ const graphology_1 = __importDefault(require("graphology")); // may be problems?
     console.log(new Date());
     yield PopulateDb_1.populateRoutesDb();
     yield PopulateDb_1.asyncWriteAirportsDataFromFile();
-    var route = yield database.getRoute("6334");
+    var route = yield database.getRoute("6337");
     console.log(route);
     //503, 2912,9823 - not found
     var path = yield test(5, route, "2912");
-    var distance = yield readPath(path.split(","));
-    console.log(distance);
+    if (path.includes("path to")) {
+        console.log("path is not possible with 3 stops");
+    }
+    else {
+        var distance = yield readPath(path.split(","));
+        console.log(distance);
+    }
     console.log(new Date());
 }))();
 function test(depth, startingPoint, endpoint) {
@@ -68,20 +73,7 @@ function test(depth, startingPoint, endpoint) {
                     catch (error) {
                         continue;
                     }
-                    if (route === "9823") {
-                        console.log("Checking for 9823");
-                    }
-                    try {
-                        if (route === undefined) {
-                            console.log("here!");
-                        }
-                        var newRoute = yield database.getRoute(route);
-                    }
-                    catch (error) {
-                        console.log(error);
-                        console.log(route);
-                        return "";
-                    }
+                    var newRoute = yield database.getRoute(route);
                     var { startAirportLat, startAirportLon, destAirportLat, destAirportLon, } = yield getCoorinates(entry.StartAirportId, route);
                     //move to fun?
                     graph.addEdge(entry.StartAirportId, route, {
@@ -122,9 +114,7 @@ function test(depth, startingPoint, endpoint) {
             depthCounter++;
         }
         //check if path exist
-        return graphology_shortest_path_1.dijkstra
-            .bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight")
-            .toString();
+        return `path from ${startingPoint} to ${endpoint} is not found`;
     });
 }
 exports.test = test;

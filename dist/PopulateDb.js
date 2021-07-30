@@ -92,9 +92,6 @@ function asyncWriteRoutesDataFromFile() {
             var tokens = l.split(",");
             var startAirportId = tokens[3];
             var destinationAirportId = tokens[5];
-            if (startAirportId === "5804" || destinationAirportId === "5804") {
-                console.log("here");
-            }
             database.writeRoutes(startAirportId, destinationAirportId);
         });
         // rejects(console.log("what"));

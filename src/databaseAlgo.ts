@@ -17,12 +17,16 @@ import Graph from "graphology"; // may be problems?
   await populateRoutesDb();
   await asyncWriteAirportsDataFromFile();
 
-  var route = await database.getRoute("6334");
+  var route = await database.getRoute("6337");
   console.log(route);
   //503, 2912,9823 - not found
   var path = await test(5, route, "2912");
-  var distance = await readPath(path.split(","));
-  console.log(distance);
+  if (path.includes("path to")) {
+    console.log("path is not possible with 3 stops");
+  } else {
+    var distance = await readPath(path.split(","));
+    console.log(distance);
+  }
   console.log(new Date());
 })();
 
@@ -51,16 +55,7 @@ export async function test(
           continue;
         }
 
-        if (route === "9823") {
-          console.log("Checking for 9823");
-        }
-        try {
-          var newRoute: Route = await database.getRoute(route);
-        } catch (error) {
-          console.log(error);
-          console.log(route);
-          return "";
-        }
+        var newRoute: Route = await database.getRoute(route);
 
         var {
           startAirportLat,
@@ -121,9 +116,7 @@ export async function test(
     depthCounter++;
   }
   //check if path exist
-  return dijkstra
-    .bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight")
-    .toString();
+  return `path from ${startingPoint} to ${endpoint} is not found`;
 }
 
 async function getCoorinates(startingPoint: string, destinationPoint: string) {
