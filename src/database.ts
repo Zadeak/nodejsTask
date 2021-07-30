@@ -2,6 +2,7 @@ import { Depot } from "depot-db";
 import { routeConverter } from "./DataConverter";
 export const airportsDAO = new Depot<Airport>("Airports");
 export const routesDAO = new Depot<RouteDb>("Routes");
+export const routeObjectDao = new Depot<Route>("RouteObjecs");
 
 export async function getRoute(airportId: string) {
   var routeDbEntryArray: any;
@@ -45,7 +46,7 @@ export async function writeRoutes(
   destinationAirportId: string
 ) {
   routesDAO.put(startAirportId, {
-    StartAirportId: startAirportId,
+    StartAirportId: startAirportId.toString(),
     DestinationAirportId: destinationAirportId,
   });
 }

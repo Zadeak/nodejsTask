@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeRoutes = exports.getAirportDataById = exports.getAirportDataByCode = exports.getRoute = exports.routesDAO = exports.airportsDAO = void 0;
+exports.writeRoutes = exports.getAirportDataById = exports.getAirportDataByCode = exports.getRoute = exports.routeObjectDao = exports.routesDAO = exports.airportsDAO = void 0;
 const depot_db_1 = require("depot-db");
 const DataConverter_1 = require("./DataConverter");
 exports.airportsDAO = new depot_db_1.Depot("Airports");
 exports.routesDAO = new depot_db_1.Depot("Routes");
+exports.routeObjectDao = new depot_db_1.Depot("RouteObjecs");
 function getRoute(airportId) {
     return __awaiter(this, void 0, void 0, function* () {
         var routeDbEntryArray;
@@ -58,7 +59,7 @@ exports.getAirportDataById = getAirportDataById;
 function writeRoutes(startAirportId, destinationAirportId) {
     return __awaiter(this, void 0, void 0, function* () {
         exports.routesDAO.put(startAirportId, {
-            StartAirportId: startAirportId,
+            StartAirportId: startAirportId.toString(),
             DestinationAirportId: destinationAirportId,
         });
     });

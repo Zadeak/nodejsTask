@@ -37,6 +37,7 @@ async function readPath(stringArray: string[]) {
   await asyncWriteAirportsDataFromFile();
 
   var route = await database.getRoute("2966");
+  console.log(route);
   //503, 2912,9823 - not found
   var path = await test(3, route, "2990");
   var distance = await readPath(path.split(","));

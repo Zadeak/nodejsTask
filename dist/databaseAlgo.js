@@ -56,6 +56,7 @@ function readPath(stringArray) {
     yield PopulateDb_1.asyncWriteRoutesDataFromFile();
     yield PopulateDb_1.asyncWriteAirportsDataFromFile();
     var route = yield database.getRoute("2966");
+    console.log(route);
     //503, 2912,9823 - not found
     var path = yield test(3, route, "2990");
     var distance = yield readPath(path.split(","));
