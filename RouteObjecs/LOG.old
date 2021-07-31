@@ -1,1 +1,5 @@
-2021/08/01-00:20:34.486 146c Delete type=3 #1
+2021/08/01-00:25:30.306 3ac0 Recovering log #3
+2021/08/01-00:25:30.306 3ac0 Level-0 table #5: started
+2021/08/01-00:25:30.309 3ac0 Level-0 table #5: 6333 bytes OK
+2021/08/01-00:25:30.317 3ac0 Delete type=0 #3
+2021/08/01-00:25:30.317 3ac0 Delete type=3 #2

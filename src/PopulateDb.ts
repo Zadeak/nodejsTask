@@ -103,7 +103,7 @@ export async function populateRoutesDb() {
     console.log(counter);
   }
 }
-export function asyncWriteRoutesDataFromFile(): Promise<number> {
+export function asyncWriteRoutesDataFromFile() {
   return new Promise((resolve, rejects) => {
     createStreamReader("./src/resources/routes.dat.txt").on(
       "line",
@@ -116,10 +116,9 @@ export function asyncWriteRoutesDataFromFile(): Promise<number> {
           DestinationAirportId: destinationAirportId,
         });
         counter++
-        console.log(counter);
       }
     );
-    resolve(counter);
+    resolve(()=>{});
     // rejects(console.log("what"));
   });
 }

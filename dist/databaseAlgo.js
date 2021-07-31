@@ -46,7 +46,9 @@ const helperfunctions_1 = require("./helperfunctions");
     }
     yield PopulateDb_1.asyncWriteAirportsDataFromFile();
     var route = yield database.getRoute("2965");
-    var path = yield test(4, route, "2912");
+    const start = yield database.getAirportIdByCode("AYGA");
+    const stop = yield database.getAirportIdByCode("MAG");
+    var path = yield test(4, start.toString(), stop.toString());
     if (path.includes("path from")) {
         console.log("path is not possible with 3 stops");
     }
@@ -61,9 +63,10 @@ function test(depth, startingPoint, endpoint) {
         const graph = new graphology_1.default();
         var depthCounter = 0;
         var tempListSize = 0;
-        var nodeList = [startingPoint];
+        const startPoint = yield database.getRoute(startingPoint);
+        var nodeList = [startPoint];
         var tempList = [];
-        graph.addNode(startingPoint.StartAirportId);
+        graph.addNode(startPoint.StartAirportId);
         while (depthCounter != depth) {
             for (var entry of nodeList.slice(-tempListSize)) {
                 var extractedRoutes = entry.DestinationAirportId;
@@ -100,7 +103,7 @@ function test(depth, startingPoint, endpoint) {
                     //move to function
                     tempList.push(newRoute);
                     try {
-                        const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startingPoint.StartAirportId, endpoint, "weight");
+                        const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startPoint.StartAirportId, endpoint, "weight");
                         console.log(path.toString());
                         return path.toString();
                     }

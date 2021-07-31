@@ -6,23 +6,29 @@ import {
 } from "./PopulateDb";
 
 import { dijkstra } from "graphology-shortest-path";
-import {counter} from "./PopulateDb";
+import { counter } from "./PopulateDb";
 import Graph from "graphology"; // may be problems?
-import { calculateDistance, delay, getCoorinates, readPath } from "./helperfunctions";
+import {
+  calculateDistance,
+  delay,
+  getCoorinates,
+  readPath,
+} from "./helperfunctions";
 
 (async () => {
   console.log(new Date());
 
-
-   await asyncWriteRoutesDataFromFile();
-  while(counter < 67000 ){
+  await asyncWriteRoutesDataFromFile();
+  while (counter < 67000) {
     await delay(1000);
   }
-  
   await asyncWriteAirportsDataFromFile();
   var route = await database.getRoute("2965");
 
-  var path = await test(4, route, "2912");
+  const start = await database.getAirportIdByCode("AYGA");
+  const stop = await database.getAirportIdByCode("MAG");
+
+  var path = await test(4, start.toString(), stop.toString());
   if (path.includes("path from")) {
     console.log("path is not possible with 3 stops");
   } else {
@@ -34,7 +40,7 @@ import { calculateDistance, delay, getCoorinates, readPath } from "./helperfunct
 
 export async function test(
   depth: number,
-  startingPoint: Route,
+  startingPoint: string,
   endpoint: string
 ) {
   const graph = new Graph();
@@ -42,9 +48,11 @@ export async function test(
   var depthCounter = 0;
   var tempListSize = 0;
 
-  var nodeList: Array<Route> = [startingPoint];
+  const startPoint = await database.getRoute(startingPoint);
+
+  var nodeList: Array<Route> = [startPoint];
   var tempList: Array<Route> = [];
-  graph.addNode(startingPoint.StartAirportId);
+  graph.addNode(startPoint.StartAirportId);
 
   while (depthCounter != depth) {
     for (var entry of nodeList.slice(-tempListSize)) {
@@ -99,7 +107,7 @@ export async function test(
         try {
           const path = dijkstra.bidirectional(
             graph,
-            startingPoint.StartAirportId,
+            startPoint.StartAirportId,
             endpoint,
             "weight"
           );

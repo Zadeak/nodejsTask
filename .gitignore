@@ -1,6 +1,7 @@
 node_modules
 Airports
-Routes/
-people/
+Routes
+people
 vscode
 dist
+RouteObjects

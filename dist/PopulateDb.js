@@ -136,9 +136,8 @@ function asyncWriteRoutesDataFromFile() {
                 DestinationAirportId: destinationAirportId,
             });
             exports.counter++;
-            console.log(exports.counter);
         }));
-        resolve(exports.counter);
+        resolve(() => { });
         // rejects(console.log("what"));
     });
 }
