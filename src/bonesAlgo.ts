@@ -1,5 +1,3 @@
-import { Edge } from "js-graph-algorithms";
-import * as database from "./database";
 
 type TestTYpe = {
   num: string;

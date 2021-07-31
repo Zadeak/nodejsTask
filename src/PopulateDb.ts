@@ -4,6 +4,8 @@ import * as fs from "fs";
 import { resolve } from "path/posix";
 import * as rd from "readline";
 import * as database from "./database";
+import { routesDirty } from "./database";
+export var counter:number = 0;
 
 // TODO: refactor to function
 // var airportsReader = rd.createInterface(
@@ -97,21 +99,27 @@ export async function populateRoutesDb() {
       StartAirportId: startAirportId,
       DestinationAirportId: destinationAirportId,
     }).then();
-
+    counter++
+    console.log(counter);
   }
 }
-export function asyncWriteRoutesDataFromFile(): Promise<void> {
+export function asyncWriteRoutesDataFromFile(): Promise<number> {
   return new Promise((resolve, rejects) => {
     createStreamReader("./src/resources/routes.dat.txt").on(
       "line",
-      (l: string) => {
+      async (l: string) => {
         var tokens = l.split(",");
         var startAirportId = tokens[3];
         var destinationAirportId = tokens[5];
-        database.writeRoutes(startAirportId, destinationAirportId);
+        await routesDirty.put(l, {
+          StartAirportId: startAirportId.toString(),
+          DestinationAirportId: destinationAirportId,
+        });
+        counter++
+        console.log(counter);
       }
     );
-    resolve();
+    resolve(counter);
     // rejects(console.log("what"));
   });
 }

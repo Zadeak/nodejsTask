@@ -1,4 +1,3 @@
-import * as jsGraph from "js-graph-algorithms";
 import * as database from "./database";
 import {
   asyncWriteAirportsDataFromFile,
@@ -7,7 +6,7 @@ import {
 } from "./PopulateDb";
 
 import { dijkstra } from "graphology-shortest-path";
-
+import {counter} from "./PopulateDb";
 import Graph from "graphology"; // may be problems?
 import { calculateDistance, delay, getCoorinates, readPath } from "./helperfunctions";
 
@@ -15,13 +14,16 @@ import { calculateDistance, delay, getCoorinates, readPath } from "./helperfunct
   console.log(new Date());
 
 
-  populateRoutesDb();
-  await delay(15000);
+   await asyncWriteRoutesDataFromFile();
+  while(counter < 67000 ){
+    await delay(1000);
+  }
+  
   await asyncWriteAirportsDataFromFile();
   var route = await database.getRoute("2965");
 
-  var path = await test(5, route, "2912");
-  if (path.includes("path to")) {
+  var path = await test(4, route, "2912");
+  if (path.includes("path from")) {
     console.log("path is not possible with 3 stops");
   } else {
     var distance = await readPath(path.split(","));

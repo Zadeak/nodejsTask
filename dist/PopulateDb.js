@@ -28,10 +28,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.asyncWriteRoutesDataFromFile = exports.populateRoutesDb = exports.asyncWriteAirportsDataFromFile = void 0;
+exports.asyncWriteRoutesDataFromFile = exports.populateRoutesDb = exports.asyncWriteAirportsDataFromFile = exports.counter = void 0;
 const fs = __importStar(require("fs"));
 const rd = __importStar(require("readline"));
 const database = __importStar(require("./database"));
+const database_1 = require("./database");
+exports.counter = 0;
 // TODO: refactor to function
 // var airportsReader = rd.createInterface(
 //   fs.createReadStream("../src/resources/airports.dat.txt")
@@ -117,19 +119,26 @@ function populateRoutesDb() {
                 StartAirportId: startAirportId,
                 DestinationAirportId: destinationAirportId,
             }).then();
+            exports.counter++;
+            console.log(exports.counter);
         }
     });
 }
 exports.populateRoutesDb = populateRoutesDb;
 function asyncWriteRoutesDataFromFile() {
     return new Promise((resolve, rejects) => {
-        createStreamReader("./src/resources/routes.dat.txt").on("line", (l) => {
+        createStreamReader("./src/resources/routes.dat.txt").on("line", (l) => __awaiter(this, void 0, void 0, function* () {
             var tokens = l.split(",");
             var startAirportId = tokens[3];
             var destinationAirportId = tokens[5];
-            database.writeRoutes(startAirportId, destinationAirportId);
-        });
-        resolve();
+            yield database_1.routesDirty.put(l, {
+                StartAirportId: startAirportId.toString(),
+                DestinationAirportId: destinationAirportId,
+            });
+            exports.counter++;
+            console.log(exports.counter);
+        }));
+        resolve(exports.counter);
         // rejects(console.log("what"));
     });
 }

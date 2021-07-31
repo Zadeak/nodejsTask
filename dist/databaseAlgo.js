@@ -35,16 +35,19 @@ exports.test = void 0;
 const database = __importStar(require("./database"));
 const PopulateDb_1 = require("./PopulateDb");
 const graphology_shortest_path_1 = require("graphology-shortest-path");
+const PopulateDb_2 = require("./PopulateDb");
 const graphology_1 = __importDefault(require("graphology")); // may be problems?
 const helperfunctions_1 = require("./helperfunctions");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     console.log(new Date());
-    PopulateDb_1.populateRoutesDb();
-    yield helperfunctions_1.delay(15000);
+    yield PopulateDb_1.asyncWriteRoutesDataFromFile();
+    while (PopulateDb_2.counter < 67000) {
+        yield helperfunctions_1.delay(1000);
+    }
     yield PopulateDb_1.asyncWriteAirportsDataFromFile();
     var route = yield database.getRoute("2965");
-    var path = yield test(5, route, "2912");
-    if (path.includes("path to")) {
+    var path = yield test(4, route, "2912");
+    if (path.includes("path from")) {
         console.log("path is not possible with 3 stops");
     }
     else {
