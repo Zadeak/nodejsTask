@@ -55,12 +55,12 @@ routesReader.on("line", (l) => {
         console.log("true");
         return;
     }
-    database_1.routesDAO.put(l, {
+    database_1.routesDirty.put(l, {
         StartAirportId: startAirportId.toString(),
         DestinationAirportId: destinationAirportId,
     });
 });
-database_1.routesDAO
+database_1.routesDirty
     .find({ where: (route) => route.StartAirportId === "2966" })
     .then((data) => {
     console.log(data);

@@ -9,16 +9,17 @@ import {
 import { dijkstra } from "graphology-shortest-path";
 
 import Graph from "graphology"; // may be problems?
-import { calculateDistance, getCoorinates, readPath } from "./helperfunctions";
+import { calculateDistance, delay, getCoorinates, readPath } from "./helperfunctions";
 
 (async () => {
   console.log(new Date());
-  await populateRoutesDb();
-  await asyncWriteAirportsDataFromFile();
 
-  var route = await database.getRoute("6334");
-  console.log(route);
-  //503, 2912,9823 - not found
+
+  populateRoutesDb();
+  await delay(15000);
+  await asyncWriteAirportsDataFromFile();
+  var route = await database.getRoute("2965");
+
   var path = await test(5, route, "2912");
   if (path.includes("path to")) {
     console.log("path is not possible with 3 stops");

@@ -32,7 +32,7 @@
 
 import * as fs from "fs";
 import * as rd from "readline";
-import { routesDAO } from "./database";
+import { routesDirty } from "./database";
 
 var airportsReader = rd.createInterface(
   fs.createReadStream("./src/resources/airports.dat.txt")
@@ -49,13 +49,13 @@ routesReader.on("line", (l: string) => {
     console.log("true");
     return;
   }
-  routesDAO.put(l, {
+  routesDirty.put(l, {
     StartAirportId: startAirportId.toString(),
     DestinationAirportId: destinationAirportId,
   });
 });
 
-routesDAO
+routesDirty
   .find({ where: (route) => route.StartAirportId === "2966" })
   .then((data) => {
     console.log(data);

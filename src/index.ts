@@ -41,7 +41,7 @@ const packages = require("../package.json");
 (async () => {
   const val1 = await asyncWriteRoutesDataFromFile();
   const val2 = await asyncWriteAirportsDataFromFile();
-  const val3 = await database.routesDAO.find({
+  const val3 = await database.routesDirty.find({
     where: (route) => route.StartAirportId === "3370",
   });
 
@@ -82,7 +82,7 @@ router.get("/", (req: any, res: any) => {
 // async dbquery endpoint
 router.get("/test", async (req: any, res: any) => {
   try {
-    var result = await database.routesDAO.find({
+    var result = await database.routesDirty.find({
       where: (route) => route.StartAirportId === "3370",
     });
 

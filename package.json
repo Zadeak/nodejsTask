@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bellmanford": "^1.2.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "depot-db": "^2.0.9",
@@ -21,8 +20,6 @@
     "graphology": "^0.20.0",
     "graphology-shortest-path": "^1.4.1",
     "graphology-types": "^0.19.3",
-    "install": "^0.13.0",
-    "js-graph-algorithms": "^1.0.18",
     "lite-server": "^2.6.1",
     "npm": "^7.20.3"
   },

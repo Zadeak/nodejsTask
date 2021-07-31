@@ -28,7 +28,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addEdges = exports.getCoorinates = exports.calculateDistance = exports.readPath = void 0;
+exports.delay = exports.addEdges = exports.getCoorinates = exports.calculateDistance = exports.readPath = void 0;
 const database = __importStar(require("./database"));
 const geodist = require("geodist");
 function readPath(stringArray) {
@@ -75,4 +75,8 @@ function addEdges(graph, point) {
     });
 }
 exports.addEdges = addEdges;
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+exports.delay = delay;
 //# sourceMappingURL=helperfunctions.js.map

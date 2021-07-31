@@ -60,7 +60,7 @@ const packages = require("../package.json");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     const val1 = yield PopulateDb_1.asyncWriteRoutesDataFromFile();
     const val2 = yield PopulateDb_1.asyncWriteAirportsDataFromFile();
-    const val3 = yield database.routesDAO.find({
+    const val3 = yield database.routesDirty.find({
         where: (route) => route.StartAirportId === "3370",
     });
     var route = yield database.getRoute("3370");
@@ -89,7 +89,7 @@ router.get("/", (req, res) => {
 // async dbquery endpoint
 router.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        var result = yield database.routesDAO.find({
+        var result = yield database.routesDirty.find({
             where: (route) => route.StartAirportId === "3370",
         });
         res.status(200).json(result);

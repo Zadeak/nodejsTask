@@ -28,7 +28,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.populateRoutesDb = exports.asyncWriteRoutesDataFromFile = exports.asyncWriteAirportsDataFromFile = void 0;
+exports.asyncWriteRoutesDataFromFile = exports.populateRoutesDb = exports.asyncWriteAirportsDataFromFile = void 0;
 const fs = __importStar(require("fs"));
 const rd = __importStar(require("readline"));
 const database = __importStar(require("./database"));
@@ -86,18 +86,18 @@ exports.asyncWriteAirportsDataFromFile = asyncWriteAirportsDataFromFile;
 //     resolve();
 //   });
 // }
-function asyncWriteRoutesDataFromFile() {
-    return __awaiter(this, void 0, void 0, function* () {
-        createStreamReader("./src/resources/routes.dat.txt").on("line", (l) => {
-            var tokens = l.split(",");
-            var startAirportId = tokens[3];
-            var destinationAirportId = tokens[5];
-            database.writeRoutes(startAirportId, destinationAirportId);
-        });
-        // rejects(console.log("what"));
-    });
-}
-exports.asyncWriteRoutesDataFromFile = asyncWriteRoutesDataFromFile;
+// export async function asyncWriteRoutesDataFromFile(): Promise<void> {
+//   createStreamReader("./src/resources/routes.dat.txt").on(
+//     "line",
+//     (l: string) => {
+//       var tokens = l.split(",");
+//       var startAirportId = tokens[3];
+//       var destinationAirportId = tokens[5];
+//       database.writeRoutes(startAirportId, destinationAirportId);
+//     }
+//   );
+//   // rejects(console.log("what"));
+// }
 // -------------------------------------------------
 function readFile(filePath) {
     return fs.readFileSync(filePath, "utf-8");
@@ -113,27 +113,25 @@ function populateRoutesDb() {
             if (startAirportId === undefined) {
                 continue;
             }
-            database.routesDAO.put(startAirportId, {
+            yield database.routesDirty.put(line, {
                 StartAirportId: startAirportId,
                 DestinationAirportId: destinationAirportId,
-            });
+            }).then();
         }
     });
 }
 exports.populateRoutesDb = populateRoutesDb;
-// export function asyncWriteRoutesDataFromFile(): Promise<void> {
-//   return new Promise((resolve, rejects) => {
-//     createStreamReader("./src/resources/routes.dat.txt").on(
-//       "line",
-//       (l: string) => {
-//         var tokens = l.split(",");
-//         var startAirportId = tokens[3];
-//         var destinationAirportId = tokens[5];
-//         database.writeRoutes(startAirportId, destinationAirportId);
-//       }
-//     );
-//     resolve();
-//     // rejects(console.log("what"));
-//   });
-// }
+function asyncWriteRoutesDataFromFile() {
+    return new Promise((resolve, rejects) => {
+        createStreamReader("./src/resources/routes.dat.txt").on("line", (l) => {
+            var tokens = l.split(",");
+            var startAirportId = tokens[3];
+            var destinationAirportId = tokens[5];
+            database.writeRoutes(startAirportId, destinationAirportId);
+        });
+        resolve();
+        // rejects(console.log("what"));
+    });
+}
+exports.asyncWriteRoutesDataFromFile = asyncWriteRoutesDataFromFile;
 //# sourceMappingURL=PopulateDb.js.map

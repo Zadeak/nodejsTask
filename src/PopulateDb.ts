@@ -65,18 +65,18 @@ export function asyncWriteAirportsDataFromFile(): Promise<void> {
 //   });
 // }
 
-export async function asyncWriteRoutesDataFromFile(): Promise<void> {
-  createStreamReader("./src/resources/routes.dat.txt").on(
-    "line",
-    (l: string) => {
-      var tokens = l.split(",");
-      var startAirportId = tokens[3];
-      var destinationAirportId = tokens[5];
-      database.writeRoutes(startAirportId, destinationAirportId);
-    }
-  );
-  // rejects(console.log("what"));
-}
+// export async function asyncWriteRoutesDataFromFile(): Promise<void> {
+//   createStreamReader("./src/resources/routes.dat.txt").on(
+//     "line",
+//     (l: string) => {
+//       var tokens = l.split(",");
+//       var startAirportId = tokens[3];
+//       var destinationAirportId = tokens[5];
+//       database.writeRoutes(startAirportId, destinationAirportId);
+//     }
+//   );
+//   // rejects(console.log("what"));
+// }
 // -------------------------------------------------
 function readFile(filePath: string) {
   return fs.readFileSync(filePath, "utf-8");
@@ -93,24 +93,25 @@ export async function populateRoutesDb() {
     if (startAirportId === undefined) {
       continue;
     }
-    database.routesDAO.put(startAirportId, {
+    await database.routesDirty.put(line, {
       StartAirportId: startAirportId,
       DestinationAirportId: destinationAirportId,
-    });
+    }).then();
+
   }
 }
-// export function asyncWriteRoutesDataFromFile(): Promise<void> {
-//   return new Promise((resolve, rejects) => {
-//     createStreamReader("./src/resources/routes.dat.txt").on(
-//       "line",
-//       (l: string) => {
-//         var tokens = l.split(",");
-//         var startAirportId = tokens[3];
-//         var destinationAirportId = tokens[5];
-//         database.writeRoutes(startAirportId, destinationAirportId);
-//       }
-//     );
-//     resolve();
-//     // rejects(console.log("what"));
-//   });
-// }
+export function asyncWriteRoutesDataFromFile(): Promise<void> {
+  return new Promise((resolve, rejects) => {
+    createStreamReader("./src/resources/routes.dat.txt").on(
+      "line",
+      (l: string) => {
+        var tokens = l.split(",");
+        var startAirportId = tokens[3];
+        var destinationAirportId = tokens[5];
+        database.writeRoutes(startAirportId, destinationAirportId);
+      }
+    );
+    resolve();
+    // rejects(console.log("what"));
+  });
+}

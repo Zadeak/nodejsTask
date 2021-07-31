@@ -19,3 +19,9 @@ type Route = {
   DestinationAirportId: Array<string>;
 
 }
+
+type AirportId = {
+  Id: number;
+  IATA: string;
+  ICAO: string;
+}

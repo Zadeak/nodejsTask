@@ -30,7 +30,7 @@ function routeConverter(routeDbArray) {
     var ar = arr
         .filter((v, i, a) => a.indexOf(v) == i)
         .filter((value, index, array) => value !== "\\N");
-    database.routeObjectDao.put(routeDbArray[0].StartAirportId.toString(), {
+    database.routesDao.put(routeDbArray[0].StartAirportId.toString(), {
         StartAirportId: routeDbArray[0].StartAirportId.toString(),
         DestinationAirportId: ar,
     });

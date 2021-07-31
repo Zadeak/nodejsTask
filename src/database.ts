@@ -1,14 +1,62 @@
 import { Depot } from "depot-db";
 import { routeConverter } from "./DataConverter";
 export const airportsDAO = new Depot<Airport>("Airports");
-export const routesDAO = new Depot<RouteDb>("Routes");
-export const routeObjectDao = new Depot<Route>("RouteObjecs");
+export const routesDirty = new Depot<RouteDb>("Routes");
+export const routesDao = new Depot<Route>("RouteObjecs");
+export const airportIdDao = new Depot<AirportId>("airportId");
 
-export async function getRoute(airportId: string) {
+
+export async function getAirportIdByCode(airportCode:string): Promise<number> {
+
+try {
+  const airportData = await airportIdDao.find({where: airport => airport.IATA === airportCode});
+  console.log(`found airport by code IATA: ${airportCode} in AirportId table`)
+
+  return airportData[0].Id;
+} catch (error) {
+  console.log(`airport code IATA ${airportCode} is not found in airportIdDao`)
+}
+try {
+  const airportData = await airportIdDao.find({where: airport => airport.ICAO === airportCode});
+  console.log(`found airport by code ICAO: ${airportCode} in AirportId table`)
+
+  return airportData[0].Id;
+} catch (error) {
+  console.log(`airport code ICAO ${airportCode} is not found in airportIdDao`)
+}
+
+  const airportDataArray = await getAirportDataByCode(airportCode);
+  const airportData = airportDataArray[0];
+  const airportId = airportData.Id;
+  const airportIATA = airportData.IATA;
+  const airportICAO = airportData.ICAO;
+  await airportIdDao.put(airportId.toString(),{Id:airportId,IATA:airportIATA,ICAO:airportICAO})
+
+  console.log(`Saved airport by code ${airportCode} to airportID table`);
+  return airportId;
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+export async function getRoute(airportId: string): Promise<Route> {
   var routeDbEntryArray: any;
 
   try {
-    routeDbEntryArray = await routeObjectDao.get(airportId);
+    routeDbEntryArray = await routesDao.get(airportId);
     console.log("found in routeObject table");
     return routeDbEntryArray;
   } catch (e) {
@@ -16,8 +64,8 @@ export async function getRoute(airportId: string) {
   }
 
   try {
-    routeDbEntryArray = await routesDAO.find({
-      where: (route) => route.StartAirportId === airportId,
+    routeDbEntryArray = await routesDirty.find({
+      where: (route) => route.StartAirportId == airportId,
     });
   } catch (e) {
     console.log(e);
@@ -43,43 +91,16 @@ export async function getAirportDataByCode(airportId: string) {
 export async function getAirportDataById(airportId: number) {
   const airportData = await airportsDAO.get(airportId.toString());
   return airportData;
-
-  // const airportData = await airportsDb.find({
-  //   where: (airport) => airport.Id === airportId,
-  // });
 }
 
 export async function writeRoutes(
   startAirportId: string,
   destinationAirportId: string
 ) {
-  await routesDAO.put(startAirportId.toString(), {
+  await routesDirty.put(startAirportId.toString(), {
     StartAirportId: startAirportId.toString(),
     DestinationAirportId: destinationAirportId,
   });
 }
 
-// // Define a document type
-// type Person = { firstname: string, lastname: string, age: number };
 
-// // Initialize a people database (Stored in /databases/people)
-// const people = new Depot<Person>("people");
-
-// // Store some people
-// people.put("John", { firstname: "John", lastname: "Doe", age: 32 });
-// people.put("Jane", { firstname: "Jane", lastname: "Doe", age: 32 });
-// people.put("Tim", { firstname: "Tim", lastname: "Burton", age: 59 });
-// people.put("Tony", { firstname: "Stark", lastname: "Doe", age: 45 });
-
-// Query people
-// var person = people.find({
-//     where: person => person.firstname == "John"
-// }).then(personsOlderThat32 => {
-//     // personsOlderThat32 = [
-//     //     { firstname: "Tim", lastname: "Burton", age: 61 },
-//     //     { firstname: "Stark", lastname: "Doe", age: 53 }
-//     // ];
-// });
-
-// // Find a person by their key (rejects if person is not found)
-// people.get("John").then( data => console.log("here"+data.firstname)/** { firstname: "John", lastname: "Doe", age: 32 } */);
