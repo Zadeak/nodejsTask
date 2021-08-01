@@ -1,39 +1,38 @@
-import * as database from "./database/database";
+import * as database from "./database/databasePersistence";
 import {
   asyncWriteAirportsDataFromFile,
   asyncWriteRoutesDataFromFile,
-  populateRoutesDb,
-} from "./PopulateDb";
+  counter
+} from "./service/data/dataLoader";
 
+import {loadData} from "./service/data/dataLoaderService";
 import { dijkstra } from "graphology-shortest-path";
-import { counter } from "./PopulateDb";
 import Graph from "graphology"; // may be problems?
 import {
   calculateDistance,
   delay,
   getCoorinates,
   readPath,
+  resolvePath,
 } from "./helperfunctions";
 
 (async () => {
   console.log(new Date());
-  await asyncWriteAirportsDataFromFile();
-  await asyncWriteRoutesDataFromFile();
-  while (counter < 67000) {
-    await delay(1000);
-  }
+  await loadData();
   var route = await database.getRoute("2965");
+  console.log(route);
 
-  const start = await database.getAirportIdByCode("AYGA");
-  const stop = await database.getAirportIdByCode("MAG");
+  const start = await database.getAirportIdByCode("ASF");
+  const stop = await database.getAirportIdByCode("SAW");
 
   var path = await test(4, start.toString(), stop.toString());
-  if (path.includes("path from")) {
-    console.log("path is not possible with 3 stops");
-  } else {
-    var distance = await readPath(path.split(","));
-    console.log(distance + " KM");
-  }
+  // if (path.includes("path from")) {
+  //   console.log("path is not possible with 3 stops");
+  // } else {
+  //   var distance = await readPath(path.split(","));
+  //   console.log(distance + " KM");
+  // }
+  await resolvePath(path);
   console.log(new Date());
 })();
 
@@ -64,46 +63,38 @@ export async function test(
           continue;
         }
 
-        var newRoute: Route = await database.getRoute(route);
-
-        var coordinates = await getCoorinates(entry.StartAirportId, route);
-
-        //move to fun?
-        graph.addEdge(entry.StartAirportId, route, {
-          weight: calculateDistance({coordinates}),
-        });
-
-        // if (route === endpoint) {
-        //   console.log("added point == endpoint");
-        //   try {
-        //     const path = dijkstra.bidirectional(
-        //       graph,
-        //       startingPoint.StartAirportId,
-        //       endpoint,
-        //       "weight"
-        //     );
-        //     console.log(path.toString());
-        //     return path.toString();
-        //   } catch (error) {
-        //     // console.log(error);
-        //     continue;
-        //   }
-        // }
-
-        //move to function
-
-        tempList.push(newRoute);
+        var newRoute: Route;
         try {
-          const path = dijkstra.bidirectional(
-            graph,
-            startPoint.StartAirportId,
-            endpoint,
-            "weight"
-          );
-          console.log(path.toString());
-          return path.toString();
+          newRoute = await database.getRoute(route);
         } catch (error) {
-          // console.log(error);
+          console.log("route:" + route + "does not have any other routes to go to")
+          continue;
+        }
+        var coordinates: Coordinates;
+
+        try {
+          coordinates = await getCoorinates(entry.StartAirportId, route);
+          graph.addEdge(entry.StartAirportId, route, {
+            weight: calculateDistance({coordinates}),
+          });
+          tempList.push(newRoute);
+          try {
+            const path = dijkstra.bidirectional(
+              graph,
+              startPoint.StartAirportId,
+              endpoint,
+              "weight"
+            );
+            console.log(path.toString());
+            return path.toString();
+          } catch (error) {
+            continue;
+          }
+        } catch (error) {
+          console.log("airport is absent in airport.dat by airportId in routes.dat file")
+          coordinates = {firstlat:1, firstlon:1,secondlat:1,secondlon:1};
+        }
+        if( coordinates.firstlat === 1 && coordinates.firstlon===1 && coordinates.secondlat===1){
           continue;
         }
       }
@@ -113,6 +104,7 @@ export async function test(
     nodeList.push.apply(nodeList, tempList);
     tempList = [];
     depthCounter++;
+    console.log("DEPTHCOUNTER"+depthCounter)
   }
   //check if path exist
   return `path from ${startingPoint} to ${endpoint} is not found`;

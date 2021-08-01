@@ -1,4 +1,4 @@
-import * as database from "./database/database";
+import * as database from "../../database/databasePersistence";
 
 //TODO: save filtered and converted routes in db
 export function routeConverter(routeDbArray: RouteDb[]): Route {

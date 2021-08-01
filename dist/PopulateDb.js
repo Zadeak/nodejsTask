@@ -31,8 +31,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.asyncWriteRoutesDataFromFile = exports.populateRoutesDb = exports.asyncWriteAirportsDataFromFile = exports.counter = void 0;
 const fs = __importStar(require("fs"));
 const rd = __importStar(require("readline"));
-const database = __importStar(require("./database/database"));
-const database_1 = require("./database/database");
+const database = __importStar(require("./database/databasePersistence"));
+const databasePersistence_1 = require("./database/databasePersistence");
 exports.counter = 0;
 // TODO: refactor to function
 // var airportsReader = rd.createInterface(
@@ -131,7 +131,7 @@ function asyncWriteRoutesDataFromFile() {
             var tokens = l.split(",");
             var startAirportId = tokens[3];
             var destinationAirportId = tokens[5];
-            yield database_1.routesDirty.put(startAirportId + ":" + destinationAirportId, {
+            yield databasePersistence_1.routesDirty.put(startAirportId + ":" + destinationAirportId, {
                 StartAirportId: startAirportId.toString(),
                 DestinationAirportId: destinationAirportId,
             });

@@ -32,30 +32,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.test = void 0;
-const database = __importStar(require("./database/database"));
-const PopulateDb_1 = require("./PopulateDb");
+const database = __importStar(require("./database/databasePersistence"));
+const dataLoaderService_1 = require("./service/data/dataLoaderService");
 const graphology_shortest_path_1 = require("graphology-shortest-path");
-const PopulateDb_2 = require("./PopulateDb");
 const graphology_1 = __importDefault(require("graphology")); // may be problems?
 const helperfunctions_1 = require("./helperfunctions");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     console.log(new Date());
-    yield PopulateDb_1.asyncWriteAirportsDataFromFile();
-    yield PopulateDb_1.asyncWriteRoutesDataFromFile();
-    while (PopulateDb_2.counter < 67000) {
-        yield helperfunctions_1.delay(1000);
-    }
+    yield dataLoaderService_1.loadData();
     var route = yield database.getRoute("2965");
-    const start = yield database.getAirportIdByCode("AYGA");
-    const stop = yield database.getAirportIdByCode("MAG");
+    console.log(route);
+    const start = yield database.getAirportIdByCode("ASF");
+    const stop = yield database.getAirportIdByCode("SAW");
     var path = yield test(4, start.toString(), stop.toString());
-    if (path.includes("path from")) {
-        console.log("path is not possible with 3 stops");
-    }
-    else {
-        var distance = yield helperfunctions_1.readPath(path.split(","));
-        console.log(distance + " KM");
-    }
+    // if (path.includes("path from")) {
+    //   console.log("path is not possible with 3 stops");
+    // } else {
+    //   var distance = await readPath(path.split(","));
+    //   console.log(distance + " KM");
+    // }
+    yield helperfunctions_1.resolvePath(path);
     console.log(new Date());
 }))();
 function test(depth, startingPoint, endpoint) {
@@ -78,37 +74,35 @@ function test(depth, startingPoint, endpoint) {
                     catch (error) {
                         continue;
                     }
-                    var newRoute = yield database.getRoute(route);
-                    var coordinates = yield helperfunctions_1.getCoorinates(entry.StartAirportId, route);
-                    //move to fun?
-                    graph.addEdge(entry.StartAirportId, route, {
-                        weight: helperfunctions_1.calculateDistance({ coordinates }),
-                    });
-                    // if (route === endpoint) {
-                    //   console.log("added point == endpoint");
-                    //   try {
-                    //     const path = dijkstra.bidirectional(
-                    //       graph,
-                    //       startingPoint.StartAirportId,
-                    //       endpoint,
-                    //       "weight"
-                    //     );
-                    //     console.log(path.toString());
-                    //     return path.toString();
-                    //   } catch (error) {
-                    //     // console.log(error);
-                    //     continue;
-                    //   }
-                    // }
-                    //move to function
-                    tempList.push(newRoute);
+                    var newRoute;
                     try {
-                        const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startPoint.StartAirportId, endpoint, "weight");
-                        console.log(path.toString());
-                        return path.toString();
+                        newRoute = yield database.getRoute(route);
                     }
                     catch (error) {
-                        // console.log(error);
+                        console.log("route:" + route + "does not have any other routes to go to");
+                        continue;
+                    }
+                    var coordinates;
+                    try {
+                        coordinates = yield helperfunctions_1.getCoorinates(entry.StartAirportId, route);
+                        graph.addEdge(entry.StartAirportId, route, {
+                            weight: helperfunctions_1.calculateDistance({ coordinates }),
+                        });
+                        tempList.push(newRoute);
+                        try {
+                            const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startPoint.StartAirportId, endpoint, "weight");
+                            console.log(path.toString());
+                            return path.toString();
+                        }
+                        catch (error) {
+                            continue;
+                        }
+                    }
+                    catch (error) {
+                        console.log("airport is absent in airport.dat by airportId in routes.dat file");
+                        coordinates = { firstlat: 1, firstlon: 1, secondlat: 1, secondlon: 1 };
+                    }
+                    if (coordinates.firstlat === 1 && coordinates.firstlon === 1 && coordinates.secondlat === 1) {
                         continue;
                     }
                 }
@@ -117,6 +111,7 @@ function test(depth, startingPoint, endpoint) {
             nodeList.push.apply(nodeList, tempList);
             tempList = [];
             depthCounter++;
+            console.log("DEPTHCOUNTER" + depthCounter);
         }
         //check if path exist
         return `path from ${startingPoint} to ${endpoint} is not found`;

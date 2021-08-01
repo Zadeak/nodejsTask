@@ -28,12 +28,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delay = exports.addEdges = exports.getCoorinates = exports.calculateDistance = exports.readPath = void 0;
-const database = __importStar(require("./database/database"));
+exports.resolvePath = exports.delay = exports.addEdges = exports.getCoorinates = exports.calculateDistance = exports.readPath = void 0;
+const database = __importStar(require("./database/databasePersistence"));
 const geodist = require("geodist");
 function readPath(stringArray) {
     return __awaiter(this, void 0, void 0, function* () {
         var LenghtCounter;
+        var airportsCodes = [];
+        for (var airportcode of stringArray) {
+            var airportData = yield database.getAirportDataById(Number.parseInt(airportcode));
+            airportsCodes.push(airportData.Name);
+        }
         // TODO: maybe it is better to save a->b in km in database as table?
         for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
             const from = stringArray[indexof];
@@ -43,7 +48,8 @@ function readPath(stringArray) {
             const distance = calculateDistance({ coordinates });
             LenghtCounter = +distance;
         }
-        return LenghtCounter === null || LenghtCounter === void 0 ? void 0 : LenghtCounter.toFixed(2);
+        var totalDistance = LenghtCounter === null || LenghtCounter === void 0 ? void 0 : LenghtCounter.toFixed((2));
+        return { airportsCodes, totalDistance };
     });
 }
 exports.readPath = readPath;
@@ -79,4 +85,16 @@ function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 exports.delay = delay;
+function resolvePath(path) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (path.includes("path from")) {
+            console.log("path is not possible with 3 stops");
+        }
+        else {
+            var distanceData = yield readPath(path.split(","));
+            console.log(distanceData.airportsCodes + ":" + distanceData.totalDistance + ":" + " KM");
+        }
+    });
+}
+exports.resolvePath = resolvePath;
 //# sourceMappingURL=helperfunctions.js.map

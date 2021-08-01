@@ -44,7 +44,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // console.log(path.toString());
 const fs = __importStar(require("fs"));
 const rd = __importStar(require("readline"));
-const database_1 = require("./database/database");
+const databasePersistence_1 = require("./database/databasePersistence");
 var airportsReader = rd.createInterface(fs.createReadStream("./src/resources/airports.dat.txt"));
 var routesReader = rd.createInterface(fs.createReadStream("./src/resources/routes.dat.txt"));
 routesReader.on("line", (l) => {
@@ -55,12 +55,12 @@ routesReader.on("line", (l) => {
         console.log("true");
         return;
     }
-    database_1.routesDirty.put(l, {
+    databasePersistence_1.routesDirty.put(l, {
         StartAirportId: startAirportId.toString(),
         DestinationAirportId: destinationAirportId,
     });
 });
-database_1.routesDirty
+databasePersistence_1.routesDirty
     .find({ where: (route) => route.StartAirportId === "2966" })
     .then((data) => {
     console.log(data);

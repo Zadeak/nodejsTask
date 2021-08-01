@@ -32,7 +32,7 @@
 
 import * as fs from "fs";
 import * as rd from "readline";
-import { routesDirty } from "./database/database";
+import { routesDirty } from "./database/databasePersistence";
 
 var airportsReader = rd.createInterface(
   fs.createReadStream("./src/resources/airports.dat.txt")

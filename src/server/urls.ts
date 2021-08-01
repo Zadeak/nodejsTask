@@ -1,7 +1,7 @@
 import{ configureServer} from "./serverConfig";
 const express = require("express");
 const packages = require("../../package.json");
-import * as database from "../database/database";
+import * as database from "../database/databasePersistence";
 
 
 const app = configureServer();

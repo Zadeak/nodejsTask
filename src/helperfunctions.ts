@@ -1,11 +1,19 @@
-import * as database from "./database/database";
+import * as database from "./database/databasePersistence";
 const geodist = require("geodist");
 import Graph from "graphology"; // may be problems?
 
 export async function readPath(stringArray: string[]) {
   var LenghtCounter;
+  var airportsCodes= [];
+
+  for(var airportcode of stringArray){
+    var airportData = await database.getAirportDataById(Number.parseInt(airportcode))
+    airportsCodes.push(airportData.Name);
+  }
   // TODO: maybe it is better to save a->b in km in database as table?
   for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
+
+
     const from = stringArray[indexof];
     const to = stringArray[indexof + 1];
     console.log("From: " + from + "To: " + to);
@@ -13,7 +21,8 @@ export async function readPath(stringArray: string[]) {
     const distance = calculateDistance({ coordinates });
     LenghtCounter = +distance;
   }
-  return LenghtCounter?.toFixed(2);
+  var totalDistance = LenghtCounter?.toFixed((2));
+  return {airportsCodes,totalDistance};
 }
 
 export function calculateDistance({
@@ -28,10 +37,7 @@ export function calculateDistance({
   );
 }
 
-export async function getCoorinates(
-  startingPoint: string,
-  destinationPoint: string
-): Promise<Coordinates> {
+export async function getCoorinates(startingPoint: string, destinationPoint: string): Promise<Coordinates> {
   var startAirport = await database.getAirportDataById(
     Number.parseInt(startingPoint)
   );
@@ -57,4 +63,13 @@ export async function addEdges(graph: Graph, point: Route) {
 }
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function resolvePath(path: string) {
+  if (path.includes("path from")) {
+    console.log("path is not possible with 3 stops");
+  } else {
+    var distanceData = await readPath(path.split(","));
+    console.log(distanceData.airportsCodes +":"+ distanceData.totalDistance+":"+ " KM");
+  }
 }
