@@ -1,4 +1,4 @@
-import * as database from "./database";
+import * as database from "./database/database";
 import {
   asyncWriteAirportsDataFromFile,
   asyncWriteRoutesDataFromFile,

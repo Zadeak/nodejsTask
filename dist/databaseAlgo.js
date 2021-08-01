@@ -32,7 +32,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.test = void 0;
-const database = __importStar(require("./database"));
+const database = __importStar(require("./database/database"));
 const PopulateDb_1 = require("./PopulateDb");
 const graphology_shortest_path_1 = require("graphology-shortest-path");
 const PopulateDb_2 = require("./PopulateDb");

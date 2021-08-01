@@ -1,9 +1,4 @@
-import { Router } from "express";
-import * as database from "./database";
-import {
-  asyncWriteAirportsDataFromFile,
-  asyncWriteRoutesDataFromFile,
-} from "./PopulateDb";
+import * as database from "./database/database";
 
 //TODO: save filtered and converted routes in db
 export function routeConverter(routeDbArray: RouteDb[]): Route {

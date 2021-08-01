@@ -29,7 +29,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.delay = exports.addEdges = exports.getCoorinates = exports.calculateDistance = exports.readPath = void 0;
-const database = __importStar(require("./database"));
+const database = __importStar(require("./database/database"));
 const geodist = require("geodist");
 function readPath(stringArray) {
     return __awaiter(this, void 0, void 0, function* () {

@@ -44,7 +44,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // console.log(path.toString());
 const fs = __importStar(require("fs"));
 const rd = __importStar(require("readline"));
-const database_1 = require("./database");
+const database_1 = require("./database/database");
 var airportsReader = rd.createInterface(fs.createReadStream("./src/resources/airports.dat.txt"));
 var routesReader = rd.createInterface(fs.createReadStream("./src/resources/routes.dat.txt"));
 routesReader.on("line", (l) => {

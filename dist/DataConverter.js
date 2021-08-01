@@ -20,7 +20,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.routeConverter = void 0;
-const database = __importStar(require("./database"));
+const database = __importStar(require("./database/database"));
 //TODO: save filtered and converted routes in db
 function routeConverter(routeDbArray) {
     var arr = [];

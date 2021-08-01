@@ -31,8 +31,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.asyncWriteRoutesDataFromFile = exports.populateRoutesDb = exports.asyncWriteAirportsDataFromFile = exports.counter = void 0;
 const fs = __importStar(require("fs"));
 const rd = __importStar(require("readline"));
-const database = __importStar(require("./database"));
-const database_1 = require("./database");
+const database = __importStar(require("./database/database"));
+const database_1 = require("./database/database");
 exports.counter = 0;
 // TODO: refactor to function
 // var airportsReader = rd.createInterface(

@@ -1,5 +1,5 @@
 import { Depot } from "depot-db";
-import { routeConverter } from "./DataConverter";
+import { routeConverter } from "../DataConverter";
 export const airportsDAO = new Depot<Airport>("Airports");
 export const routesDirty = new Depot<RouteDb>("Routes");
 export const routesDao = new Depot<Route>("RouteObjecs");

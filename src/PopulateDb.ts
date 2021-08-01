@@ -3,8 +3,8 @@ import { Depot } from "depot-db";
 import * as fs from "fs";
 import { resolve } from "path/posix";
 import * as rd from "readline";
-import * as database from "./database";
-import { routesDirty } from "./database";
+import * as database from "./database/database";
+import { routesDirty } from "./database/database";
 export var counter:number = 0;
 
 // TODO: refactor to function

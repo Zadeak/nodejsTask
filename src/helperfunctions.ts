@@ -1,4 +1,4 @@
-import * as database from "./database";
+import * as database from "./database/database";
 const geodist = require("geodist");
 import Graph from "graphology"; // may be problems?
 
