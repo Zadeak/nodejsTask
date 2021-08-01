@@ -9,7 +9,7 @@ export async function loadData(){
     while (counter < 67000) {
       await delay(1000);
     }
-    logger.debug("route file is done loading");
+    logger.debug("data is loaded");
 }
 
 

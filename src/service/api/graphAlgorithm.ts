@@ -4,7 +4,7 @@ import { calculateDistance, getCoorinates,} from "../../helperfunctions";
 import { dijkstra } from "graphology-shortest-path";
 import { logger } from "../../logger";
 
-export async function findPath( depth: number, startingPoint: string, endpoint: string) {
+export async function findPath( depth: number, startingPoint: string, endpoint: string): Promise<string> {
   const graph = new Graph();
 
   var depthCounter = 0;

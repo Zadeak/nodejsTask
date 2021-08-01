@@ -18,6 +18,7 @@ export function asyncWriteAirportsDataFromFile(): Promise<void> {
         var tokens = l.split(",");
         var nr = parseInt(tokens[0]);
         var name = tokens[1];
+        name = name.substring(1,name.length-1);
         var city = tokens[2];
         var country = tokens[3];
         var iata = tokens[4].slice(1, 4);

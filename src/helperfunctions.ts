@@ -1,14 +1,15 @@
 import * as database from "./database/databasePersistence";
 const geodist = require("geodist");
 import Graph from "graphology"; // may be problems?
+import { logger } from "./logger";
 
-export async function readPath(stringArray: string[]) {
-  var LenghtCounter;
+export async function readPath(stringArray: string[]): Promise<PathResponse> {
+  var LenghtCounter:number = 0;
   var airportsCodes= [];
 
   for(var airportcode of stringArray){
     var airportData = await database.getAirportDataById(Number.parseInt(airportcode))
-    airportsCodes.push(airportData.Name);
+    airportsCodes.push("Name: "+airportData.Name+" IATA:" + airportData.IATA +" ICAO:" +airportData.ICAO);
   }
   // TODO: maybe it is better to save a->b in km in database as table?
   for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
@@ -20,7 +21,8 @@ export async function readPath(stringArray: string[]) {
     const distance = calculateDistance({ coordinates });
     LenghtCounter = +distance;
   }
-  var totalDistance = LenghtCounter?.toFixed((2));
+  var totalDistanceString = LenghtCounter.toFixed((2));
+  var totalDistance = Number.parseFloat(totalDistanceString);
   return {airportsCodes,totalDistance};
 }
 
@@ -64,13 +66,18 @@ export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function resolvePath(path: string) {
+export async function resolvePath(path: string) : Promise<PathResponse> {
   if (path.includes("path from")) {
-    console.log("path is not possible with 3 stops");
+    logger.debug(`${path}: this path is not possible with 3 stops`)
+    return {airportsCodes:[`${path}: this path is not possible with 3 stops`],totalDistance:0};
   } else {
     var distanceData = await readPath(path.split(","));
-
-    distanceData.airportsCodes.forEach((data: string)=> console.log(data+"=>"))
-    console.log("Distance:" + distanceData.totalDistance+":"+ " KM");
+    distanceData.airportsCodes.forEach((data: string)=> {
+      logger.debug(data+"=>");
+    })
+    logger.debug("Distance:" + distanceData.totalDistance+":"+ " KM");
+    var airportsCodes = distanceData.airportsCodes;
+    var totalDistance = distanceData.totalDistance;
+    return {airportsCodes, totalDistance};
   }
 }

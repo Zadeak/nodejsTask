@@ -31,13 +31,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolvePath = exports.delay = exports.addEdges = exports.getCoorinates = exports.calculateDistance = exports.readPath = void 0;
 const database = __importStar(require("./database/databasePersistence"));
 const geodist = require("geodist");
+const logger_1 = require("./logger");
 function readPath(stringArray) {
     return __awaiter(this, void 0, void 0, function* () {
-        var LenghtCounter;
+        var LenghtCounter = 0;
         var airportsCodes = [];
         for (var airportcode of stringArray) {
             var airportData = yield database.getAirportDataById(Number.parseInt(airportcode));
-            airportsCodes.push(airportData.Name);
+            airportsCodes.push("Name: " + airportData.Name + " IATA:" + airportData.IATA + " ICAO:" + airportData.ICAO);
         }
         // TODO: maybe it is better to save a->b in km in database as table?
         for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
@@ -47,7 +48,8 @@ function readPath(stringArray) {
             const distance = calculateDistance({ coordinates });
             LenghtCounter = +distance;
         }
-        var totalDistance = LenghtCounter === null || LenghtCounter === void 0 ? void 0 : LenghtCounter.toFixed((2));
+        var totalDistanceString = LenghtCounter.toFixed((2));
+        var totalDistance = Number.parseFloat(totalDistanceString);
         return { airportsCodes, totalDistance };
     });
 }
@@ -87,12 +89,18 @@ exports.delay = delay;
 function resolvePath(path) {
     return __awaiter(this, void 0, void 0, function* () {
         if (path.includes("path from")) {
-            console.log("path is not possible with 3 stops");
+            logger_1.logger.debug(`${path}: this path is not possible with 3 stops`);
+            return { airportsCodes: [`${path}: this path is not possible with 3 stops`], totalDistance: 0 };
         }
         else {
             var distanceData = yield readPath(path.split(","));
-            distanceData.airportsCodes.forEach((data) => console.log(data + "=>"));
-            console.log("Distance:" + distanceData.totalDistance + ":" + " KM");
+            distanceData.airportsCodes.forEach((data) => {
+                logger_1.logger.debug(data + "=>");
+            });
+            logger_1.logger.debug("Distance:" + distanceData.totalDistance + ":" + " KM");
+            var airportsCodes = distanceData.airportsCodes;
+            var totalDistance = distanceData.totalDistance;
+            return { airportsCodes, totalDistance };
         }
     });
 }

@@ -17,18 +17,21 @@ type RouteDb = {
 type Route = {
   StartAirportId: string;
   DestinationAirportId: Array<string>;
-
-}
+};
 
 type AirportId = {
   Id: number;
   IATA: string;
   ICAO: string;
-}
+};
 
 type Coordinates = {
-  firstlat:number,
-  firstlon:number,
-  secondlat: number,
-  secondlon:number,
-}
+  firstlat: number;
+  firstlon: number;
+  secondlat: number;
+  secondlon: number;
+};
+type PathResponse = {
+  airportsCodes: string[];
+  totalDistance: number;
+};

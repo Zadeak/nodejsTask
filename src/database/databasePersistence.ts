@@ -6,7 +6,7 @@ export const routesDirty = new Depot<RouteDb>("Routes");
 export const routesDao = new Depot<Route>("RouteObjecs");
 export const airportIdDao = new Depot<AirportId>("airportId");
 
-export async function getAirportIdByCode(airportCode: string): Promise<number> {
+export async function getAirportIdByCode(airportCode: string): Promise<string> {
   try {
     const airportData = await airportIdDao.find({
       where: (airport) => airport.IATA === airportCode,
@@ -14,7 +14,7 @@ export async function getAirportIdByCode(airportCode: string): Promise<number> {
     logger.debug( `found airport by code IATA: ${airportCode} in AirportId table`);
 
 
-    return airportData[0].Id;
+    return airportData[0].Id.toString();
   } catch (error) {
     logger.debug( `airport code IATA ${airportCode} is not found in airportIdDao`);
 
@@ -25,7 +25,7 @@ export async function getAirportIdByCode(airportCode: string): Promise<number> {
     });
     logger.debug(`found airport by code ICAO: ${airportCode} in AirportId table`);
 
-    return airportData[0].Id;
+    return airportData[0].Id.toString();
   } catch (error) {
     logger.debug( `airport code ICAO ${airportCode} is not found in airportIdDao`);
   }
@@ -41,7 +41,7 @@ export async function getAirportIdByCode(airportCode: string): Promise<number> {
     ICAO: airportICAO,
   });
   logger.debug(`Saved airport by code ${airportCode} to airportID table`);
-  return airportId;
+  return airportId.toString();
 }
 
 export async function getRoute(airportId: string): Promise<Route> {
