@@ -131,7 +131,7 @@ function asyncWriteRoutesDataFromFile() {
             var tokens = l.split(",");
             var startAirportId = tokens[3];
             var destinationAirportId = tokens[5];
-            yield database_1.routesDirty.put(l, {
+            yield database_1.routesDirty.put(startAirportId + ":" + destinationAirportId, {
                 StartAirportId: startAirportId.toString(),
                 DestinationAirportId: destinationAirportId,
             });

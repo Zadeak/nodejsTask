@@ -39,27 +39,27 @@ function readPath(stringArray) {
             const from = stringArray[indexof];
             const to = stringArray[indexof + 1];
             console.log("From: " + from + "To: " + to);
-            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(from, to);
-            const distance = calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon);
+            var coordinates = yield getCoorinates(from, to);
+            const distance = calculateDistance({ coordinates });
             LenghtCounter = +distance;
         }
-        return LenghtCounter;
+        return LenghtCounter === null || LenghtCounter === void 0 ? void 0 : LenghtCounter.toFixed(2);
     });
 }
 exports.readPath = readPath;
-function calculateDistance(firstLat, firstLon, secondlat, secondLon) {
-    return geodist({ lat: firstLat, lon: firstLon }, { lat: secondlat, lon: secondLon }, { exact: true, unit: "km" });
+function calculateDistance({ coordinates, }) {
+    return geodist({ lat: coordinates.firstlat, lon: coordinates.firstlon }, { lat: coordinates.secondlat, lon: coordinates.secondlon }, { exact: true, unit: "km" });
 }
 exports.calculateDistance = calculateDistance;
 function getCoorinates(startingPoint, destinationPoint) {
     return __awaiter(this, void 0, void 0, function* () {
         var startAirport = yield database.getAirportDataById(Number.parseInt(startingPoint));
         var destAirport = yield database.getAirportDataById(Number.parseInt(destinationPoint));
-        var startAirportLat = startAirport.Latitude;
-        var startAirportLon = startAirport.Longitude;
-        var destAirportLat = destAirport.Latitude;
-        var destAirportLon = destAirport.Longitude;
-        return { startAirportLat, startAirportLon, destAirportLat, destAirportLon };
+        var firstlat = startAirport.Latitude;
+        var firstlon = startAirport.Longitude;
+        var secondlat = destAirport.Latitude;
+        var secondlon = destAirport.Longitude;
+        return { firstlat, firstlon, secondlat, secondlon };
     });
 }
 exports.getCoorinates = getCoorinates;
@@ -67,16 +67,16 @@ function addEdges(graph, point) {
     return __awaiter(this, void 0, void 0, function* () {
         for (var it of point.DestinationAirportId) {
             graph.addNode(it);
-            var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } = yield getCoorinates(point.StartAirportId, it);
+            var coordinates = yield getCoorinates(point.StartAirportId, it);
             graph.addEdge(point.StartAirportId, it, {
-                weight: calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
+                weight: calculateDistance({ coordinates }),
             });
         }
     });
 }
 exports.addEdges = addEdges;
 function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 exports.delay = delay;
 //# sourceMappingURL=helperfunctions.js.map

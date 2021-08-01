@@ -40,11 +40,11 @@ const graphology_1 = __importDefault(require("graphology")); // may be problems?
 const helperfunctions_1 = require("./helperfunctions");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     console.log(new Date());
+    yield PopulateDb_1.asyncWriteAirportsDataFromFile();
     yield PopulateDb_1.asyncWriteRoutesDataFromFile();
     while (PopulateDb_2.counter < 67000) {
         yield helperfunctions_1.delay(1000);
     }
-    yield PopulateDb_1.asyncWriteAirportsDataFromFile();
     var route = yield database.getRoute("2965");
     const start = yield database.getAirportIdByCode("AYGA");
     const stop = yield database.getAirportIdByCode("MAG");
@@ -54,7 +54,7 @@ const helperfunctions_1 = require("./helperfunctions");
     }
     else {
         var distance = yield helperfunctions_1.readPath(path.split(","));
-        console.log(distance);
+        console.log(distance + " KM");
     }
     console.log(new Date());
 }))();
@@ -79,10 +79,10 @@ function test(depth, startingPoint, endpoint) {
                         continue;
                     }
                     var newRoute = yield database.getRoute(route);
-                    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon, } = yield helperfunctions_1.getCoorinates(entry.StartAirportId, route);
+                    var coordinates = yield helperfunctions_1.getCoorinates(entry.StartAirportId, route);
                     //move to fun?
                     graph.addEdge(entry.StartAirportId, route, {
-                        weight: helperfunctions_1.calculateDistance(startAirportLat, startAirportLon, destAirportLat, destAirportLon),
+                        weight: helperfunctions_1.calculateDistance({ coordinates }),
                     });
                     // if (route === endpoint) {
                     //   console.log("added point == endpoint");

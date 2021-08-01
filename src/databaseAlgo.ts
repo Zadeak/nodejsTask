@@ -17,12 +17,11 @@ import {
 
 (async () => {
   console.log(new Date());
-
+  await asyncWriteAirportsDataFromFile();
   await asyncWriteRoutesDataFromFile();
   while (counter < 67000) {
     await delay(1000);
   }
-  await asyncWriteAirportsDataFromFile();
   var route = await database.getRoute("2965");
 
   const start = await database.getAirportIdByCode("AYGA");
@@ -33,7 +32,7 @@ import {
     console.log("path is not possible with 3 stops");
   } else {
     var distance = await readPath(path.split(","));
-    console.log(distance);
+    console.log(distance + " KM");
   }
   console.log(new Date());
 })();
@@ -67,21 +66,11 @@ export async function test(
 
         var newRoute: Route = await database.getRoute(route);
 
-        var {
-          startAirportLat,
-          startAirportLon,
-          destAirportLat,
-          destAirportLon,
-        } = await getCoorinates(entry.StartAirportId, route);
+        var coordinates = await getCoorinates(entry.StartAirportId, route);
 
         //move to fun?
         graph.addEdge(entry.StartAirportId, route, {
-          weight: calculateDistance(
-            startAirportLat,
-            startAirportLon,
-            destAirportLat,
-            destAirportLon
-          ),
+          weight: calculateDistance({coordinates}),
         });
 
         // if (route === endpoint) {

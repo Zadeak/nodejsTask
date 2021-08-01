@@ -25,3 +25,10 @@ type AirportId = {
   IATA: string;
   ICAO: string;
 }
+
+type Coordinates = {
+  firstlat:number,
+  firstlon:number,
+  secondlat: number,
+  secondlon:number,
+}

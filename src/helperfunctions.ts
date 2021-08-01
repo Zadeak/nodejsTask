@@ -9,28 +9,21 @@ export async function readPath(stringArray: string[]) {
     const from = stringArray[indexof];
     const to = stringArray[indexof + 1];
     console.log("From: " + from + "To: " + to);
-    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } =
-      await getCoorinates(from, to);
-    const distance = calculateDistance(
-      startAirportLat,
-      startAirportLon,
-      destAirportLat,
-      destAirportLon
-    );
+    var coordinates = await getCoorinates(from, to);
+    const distance = calculateDistance({ coordinates });
     LenghtCounter = +distance;
   }
-  return LenghtCounter;
+  return LenghtCounter?.toFixed(2);
 }
 
-export function calculateDistance(
-  firstLat: number,
-  firstLon: number,
-  secondlat: number,
-  secondLon: number
-): number {
+export function calculateDistance({
+  coordinates,
+}: {
+  coordinates: Coordinates;
+}) {
   return geodist(
-    { lat: firstLat, lon: firstLon },
-    { lat: secondlat, lon: secondLon },
+    { lat: coordinates.firstlat, lon: coordinates.firstlon },
+    { lat: coordinates.secondlat, lon: coordinates.secondlon },
     { exact: true, unit: "km" }
   );
 }
@@ -38,36 +31,30 @@ export function calculateDistance(
 export async function getCoorinates(
   startingPoint: string,
   destinationPoint: string
-) {
+): Promise<Coordinates> {
   var startAirport = await database.getAirportDataById(
     Number.parseInt(startingPoint)
   );
   var destAirport = await database.getAirportDataById(
     Number.parseInt(destinationPoint)
   );
-  var startAirportLat = startAirport.Latitude;
-  var startAirportLon = startAirport.Longitude;
-  var destAirportLat = destAirport.Latitude;
-  var destAirportLon = destAirport.Longitude;
-  return { startAirportLat, startAirportLon, destAirportLat, destAirportLon };
+  var firstlat = startAirport.Latitude;
+  var firstlon = startAirport.Longitude;
+  var secondlat = destAirport.Latitude;
+  var secondlon = destAirport.Longitude;
+  return { firstlat, firstlon, secondlat, secondlon };
 }
 
 export async function addEdges(graph: Graph, point: Route) {
   for (var it of point.DestinationAirportId) {
     graph.addNode(it);
 
-    var { startAirportLat, startAirportLon, destAirportLat, destAirportLon } =
-      await getCoorinates(point.StartAirportId, it);
+    var coordinates = await getCoorinates(point.StartAirportId, it);
     graph.addEdge(point.StartAirportId, it, {
-      weight: calculateDistance(
-        startAirportLat,
-        startAirportLon,
-        destAirportLat,
-        destAirportLon
-      ),
+      weight: calculateDistance({ coordinates }),
     });
   }
 }
 export function delay(ms: number) {
-  return new Promise( resolve => setTimeout(resolve, ms) );
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
