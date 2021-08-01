@@ -4,7 +4,7 @@ import { calculateDistance, getCoorinates,} from "../../helperfunctions";
 import { dijkstra } from "graphology-shortest-path";
 import { logger } from "../../logger";
 
-export async function findPath( depth: number, startingPoint: string, endpoint: string): Promise<string> {
+export async function findPath( depth: number, startingPoint: string, endpoint: string){
   const graph = new Graph();
 
   var depthCounter = 0;
@@ -64,7 +64,7 @@ export async function findPath( depth: number, startingPoint: string, endpoint: 
             endpoint,
             "weight"
           );
-          return path.toString();
+          return {message:path.toString(), codes: [startingPoint,endpoint], steps:depth};
         } catch (error) {
           // console.log("Path cannot be created yet")
           continue;
@@ -77,5 +77,5 @@ export async function findPath( depth: number, startingPoint: string, endpoint: 
     depthCounter++;
   }
   //check if path exist
-  return `path from ${startingPoint} to ${endpoint} is not found`;
+  return {message: `path from ${startingPoint} to ${endpoint} is not found`, codes: [startingPoint,endpoint], steps:depth};
 }

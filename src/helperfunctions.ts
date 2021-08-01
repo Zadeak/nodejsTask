@@ -66,12 +66,15 @@ export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function resolvePath(path: string) : Promise<PathResponse> {
-  if (path.includes("path from")) {
-    logger.debug(`${path}: this path is not possible with 3 stops`)
-    return {airportsCodes:[`${path}: this path is not possible with 3 stops`],totalDistance:0};
+export async function resolvePath({message,codes,steps}:{message: any,codes: Array<any>,steps: any}) : Promise<PathResponse> {
+  if (message.includes("path from")) {
+    logger.debug(`${message}: this path is not possible with 3 stops`)
+    const from = await database.getAirportDataById(codes[0]);
+    const to = await database.getAirportDataById(codes[1]);
+
+    return {airportsCodes:[`Flight from: ${from.Name}, IATA: '${from.IATA}', ICAO: '${from.ICAO}' to: ${to.Name}, IATA: '${to.IATA}' ICAO: '${to.ICAO}' is not possible with ${steps-1} stops`],totalDistance:0};
   } else {
-    var distanceData = await readPath(path.split(","));
+    var distanceData = await readPath(message.split(","));
     distanceData.airportsCodes.forEach((data: string)=> {
       logger.debug(data+"=>");
     })

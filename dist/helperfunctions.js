@@ -86,14 +86,16 @@ function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 exports.delay = delay;
-function resolvePath(path) {
+function resolvePath({ message, codes, steps }) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (path.includes("path from")) {
-            logger_1.logger.debug(`${path}: this path is not possible with 3 stops`);
-            return { airportsCodes: [`${path}: this path is not possible with 3 stops`], totalDistance: 0 };
+        if (message.includes("path from")) {
+            logger_1.logger.debug(`${message}: this path is not possible with 3 stops`);
+            const from = yield database.getAirportDataById(codes[0]);
+            const to = yield database.getAirportDataById(codes[1]);
+            return { airportsCodes: [`Flight from: ${from.Name}, IATA: '${from.IATA}', ICAO: '${from.ICAO}' to: ${to.Name}, IATA: '${to.IATA}' ICAO: '${to.ICAO}' is not possible with ${steps - 1} stops`], totalDistance: 0 };
         }
         else {
-            var distanceData = yield readPath(path.split(","));
+            var distanceData = yield readPath(message.split(","));
             distanceData.airportsCodes.forEach((data) => {
                 logger_1.logger.debug(data + "=>");
             });
