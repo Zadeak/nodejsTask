@@ -94,6 +94,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //   // console.log(lol);
 //   console.log(lol.DestinationAirportId[2]);
 // }
+require("./logger");
 const server_1 = require("./server/server");
 server_1.launcher();
 //# sourceMappingURL=index.js.map

@@ -35,6 +35,7 @@ router.get("/test", async (req: any, res: any) => {
 
 
   router.post("/post", (req: any, res:any)=>{
+    
     res.json(req.body);
   })
 

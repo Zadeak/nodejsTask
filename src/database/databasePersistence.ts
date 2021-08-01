@@ -1,6 +1,6 @@
 import { Depot } from "depot-db";
 import { routeConverter } from "../service/data/DataConverter";
-
+import {logger} from "../logger"
 export const airportsDAO = new Depot<Airport>("Airports");
 export const routesDirty = new Depot<RouteDb>("Routes");
 export const routesDao = new Depot<Route>("RouteObjecs");
@@ -11,29 +11,23 @@ export async function getAirportIdByCode(airportCode: string): Promise<number> {
     const airportData = await airportIdDao.find({
       where: (airport) => airport.IATA === airportCode,
     });
-    console.log(
-      `found airport by code IATA: ${airportCode} in AirportId table`
-    );
+    logger.debug( `found airport by code IATA: ${airportCode} in AirportId table`);
+
 
     return airportData[0].Id;
   } catch (error) {
-    console.log(
-      `airport code IATA ${airportCode} is not found in airportIdDao`
-    );
+    logger.debug( `airport code IATA ${airportCode} is not found in airportIdDao`);
+
   }
   try {
     const airportData = await airportIdDao.find({
       where: (airport) => airport.ICAO === airportCode,
     });
-    console.log(
-      `found airport by code ICAO: ${airportCode} in AirportId table`
-    );
+    logger.debug(`found airport by code ICAO: ${airportCode} in AirportId table`);
 
     return airportData[0].Id;
   } catch (error) {
-    console.log(
-      `airport code ICAO ${airportCode} is not found in airportIdDao`
-    );
+    logger.debug( `airport code ICAO ${airportCode} is not found in airportIdDao`);
   }
 
   const airportDataArray = await getAirportDataByCode(airportCode);
@@ -46,8 +40,7 @@ export async function getAirportIdByCode(airportCode: string): Promise<number> {
     IATA: airportIATA,
     ICAO: airportICAO,
   });
-
-  console.log(`Saved airport by code ${airportCode} to airportID table`);
+  logger.debug(`Saved airport by code ${airportCode} to airportID table`);
   return airportId;
 }
 
@@ -56,10 +49,12 @@ export async function getRoute(airportId: string): Promise<Route> {
 
   try {
     routeDbEntryArray = await routesDao.get(airportId);
-    console.log("found in routeObject table");
+    logger.debug("found in routeObject table");
+
     return routeDbEntryArray;
   } catch (e) {
-    console.log(airportId + " not found in routeObject Table");
+    logger.debug(airportId + " not found in routeObject Table");
+
   }
 
   try {
@@ -67,8 +62,8 @@ export async function getRoute(airportId: string): Promise<Route> {
       where: (route) => route.StartAirportId == airportId,
     });
   } catch (e) {
-    console.log(e);
-    console.log("Key: " + airportId);
+    logger.debug("Error: "+ e + "Key: " + airportId);
+
   }
   return routeConverter(routeDbEntryArray);
 }

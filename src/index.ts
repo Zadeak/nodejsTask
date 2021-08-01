@@ -116,6 +116,7 @@
 //   console.log(lol.DestinationAirportId[2]);
 // }
 
+import "./logger"
 
 import {launcher} from "./server/server";
 

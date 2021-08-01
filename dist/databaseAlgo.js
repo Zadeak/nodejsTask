@@ -27,15 +27,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.test = void 0;
 const database = __importStar(require("./database/databasePersistence"));
 const dataLoaderService_1 = require("./service/data/dataLoaderService");
-const graphology_shortest_path_1 = require("graphology-shortest-path");
-const graphology_1 = __importDefault(require("graphology")); // may be problems?
 const helperfunctions_1 = require("./helperfunctions");
 const graphAlgorithm_1 = require("./service/api/graphAlgorithm");
 (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,78 +40,7 @@ const graphAlgorithm_1 = require("./service/api/graphAlgorithm");
     const start = yield database.getAirportIdByCode("ASF");
     const stop = yield database.getAirportIdByCode("EGLL");
     var path = yield graphAlgorithm_1.findPath(4, start.toString(), stop.toString());
-    // var path = await test(4, start.toString(), stop.toString());
-    // if (path.includes("path from")) {
-    //   console.log("path is not possible with 3 stops");
-    // } else {
-    //   var distance = await readPath(path.split(","));
-    //   console.log(distance + " KM");
-    // }
     yield helperfunctions_1.resolvePath(path);
     console.log(new Date());
 }))();
-function test(depth, startingPoint, endpoint) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const graph = new graphology_1.default();
-        var depthCounter = 0;
-        var tempListSize = 0;
-        const startPoint = yield database.getRoute(startingPoint);
-        var nodeList = [startPoint];
-        var tempList = [];
-        graph.addNode(startPoint.StartAirportId);
-        while (depthCounter != depth) {
-            for (var entry of nodeList.slice(-tempListSize)) {
-                var extractedRoutes = entry.DestinationAirportId;
-                for (var route of extractedRoutes) {
-                    //move to function
-                    try {
-                        graph.addNode(route);
-                    }
-                    catch (error) {
-                        continue;
-                    }
-                    var newRoute;
-                    try {
-                        newRoute = yield database.getRoute(route);
-                    }
-                    catch (error) {
-                        console.log("route:" + route + "does not have any other routes to go to");
-                        continue;
-                    }
-                    var coordinates;
-                    try {
-                        coordinates = yield helperfunctions_1.getCoorinates(entry.StartAirportId, route);
-                        graph.addEdge(entry.StartAirportId, route, {
-                            weight: helperfunctions_1.calculateDistance({ coordinates }),
-                        });
-                        tempList.push(newRoute);
-                        try {
-                            const path = graphology_shortest_path_1.dijkstra.bidirectional(graph, startPoint.StartAirportId, endpoint, "weight");
-                            console.log(path.toString());
-                            return path.toString();
-                        }
-                        catch (error) {
-                            continue;
-                        }
-                    }
-                    catch (error) {
-                        console.log("airport is absent in airport.dat by airportId in routes.dat file");
-                        coordinates = { firstlat: 1, firstlon: 1, secondlat: 1, secondlon: 1 };
-                    }
-                    if (coordinates.firstlat === 1 && coordinates.firstlon === 1 && coordinates.secondlat === 1) {
-                        continue;
-                    }
-                }
-            }
-            var tempListSize = tempList.length;
-            nodeList.push.apply(nodeList, tempList);
-            tempList = [];
-            depthCounter++;
-            console.log("DEPTHCOUNTER" + depthCounter);
-        }
-        //check if path exist
-        return `path from ${startingPoint} to ${endpoint} is not found`;
-    });
-}
-exports.test = test;
 //# sourceMappingURL=databaseAlgo.js.map

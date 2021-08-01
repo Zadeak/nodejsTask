@@ -2,6 +2,7 @@ import Graph from "graphology";
 import * as database from "../../database/databasePersistence";
 import { calculateDistance, getCoorinates,} from "../../helperfunctions";
 import { dijkstra } from "graphology-shortest-path";
+import { logger } from "../../logger";
 
 export async function findPath( depth: number, startingPoint: string, endpoint: string) {
   const graph = new Graph();
@@ -30,16 +31,15 @@ export async function findPath( depth: number, startingPoint: string, endpoint: 
         try {
           newRoute = await database.getRoute(route);
         } catch (error) {
-          console.log(
-            "route:" + route + "does not have any other routes to go to"
-          );
+          logger.debug("route:" + route + "does not have any other routes to go to");
           continue;
         }
         var coordinates: Coordinates;
         try {
           coordinates = await getCoorinates(entry.StartAirportId, route);
         } catch (error) {
-            console.log("airport is absent in airport.dat by airportId in routes.dat file")
+            logger.debug("airport is absent in airport.dat by airportId in routes.dat file");
+
             coordinates = { firstlat: 1, firstlon: 1, secondlat: 1, secondlon: 1};
         }
         if (
