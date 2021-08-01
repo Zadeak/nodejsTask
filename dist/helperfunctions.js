@@ -43,7 +43,6 @@ function readPath(stringArray) {
         for (var indexof = 0; indexof < stringArray.length - 1; indexof++) {
             const from = stringArray[indexof];
             const to = stringArray[indexof + 1];
-            console.log("From: " + from + "To: " + to);
             var coordinates = yield getCoorinates(from, to);
             const distance = calculateDistance({ coordinates });
             LenghtCounter = +distance;
@@ -92,7 +91,8 @@ function resolvePath(path) {
         }
         else {
             var distanceData = yield readPath(path.split(","));
-            console.log(distanceData.airportsCodes + ":" + distanceData.totalDistance + ":" + " KM");
+            distanceData.airportsCodes.forEach((data) => console.log(data + "=>"));
+            console.log("Distance:" + distanceData.totalDistance + ":" + " KM");
         }
     });
 }

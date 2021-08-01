@@ -16,7 +16,6 @@ export async function readPath(stringArray: string[]) {
 
     const from = stringArray[indexof];
     const to = stringArray[indexof + 1];
-    console.log("From: " + from + "To: " + to);
     var coordinates = await getCoorinates(from, to);
     const distance = calculateDistance({ coordinates });
     LenghtCounter = +distance;
@@ -70,6 +69,8 @@ export async function resolvePath(path: string) {
     console.log("path is not possible with 3 stops");
   } else {
     var distanceData = await readPath(path.split(","));
-    console.log(distanceData.airportsCodes +":"+ distanceData.totalDistance+":"+ " KM");
+
+    distanceData.airportsCodes.forEach((data: string)=> console.log(data+"=>"))
+    console.log("Distance:" + distanceData.totalDistance+":"+ " KM");
   }
 }

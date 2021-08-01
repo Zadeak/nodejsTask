@@ -64,10 +64,9 @@ export async function findPath( depth: number, startingPoint: string, endpoint: 
             endpoint,
             "weight"
           );
-          console.log(path.toString());
           return path.toString();
         } catch (error) {
-          // console.log(error);
+          // console.log("Path cannot be created yet")
           continue;
         }
       }

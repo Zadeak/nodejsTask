@@ -15,6 +15,7 @@ import {
   readPath,
   resolvePath,
 } from "./helperfunctions";
+import { findPath } from "./service/api/graphAlgorithm";
 
 (async () => {
   console.log(new Date());
@@ -23,9 +24,13 @@ import {
   console.log(route);
 
   const start = await database.getAirportIdByCode("ASF");
-  const stop = await database.getAirportIdByCode("SAW");
+  const stop = await database.getAirportIdByCode("EGLL");
 
-  var path = await test(4, start.toString(), stop.toString());
+
+  var path = await findPath(4, start.toString(),stop.toString())
+  // var path = await test(4, start.toString(), stop.toString());
+
+
   // if (path.includes("path from")) {
   //   console.log("path is not possible with 3 stops");
   // } else {

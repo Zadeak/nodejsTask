@@ -37,14 +37,16 @@ const dataLoaderService_1 = require("./service/data/dataLoaderService");
 const graphology_shortest_path_1 = require("graphology-shortest-path");
 const graphology_1 = __importDefault(require("graphology")); // may be problems?
 const helperfunctions_1 = require("./helperfunctions");
+const graphAlgorithm_1 = require("./service/api/graphAlgorithm");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     console.log(new Date());
     yield dataLoaderService_1.loadData();
     var route = yield database.getRoute("2965");
     console.log(route);
     const start = yield database.getAirportIdByCode("ASF");
-    const stop = yield database.getAirportIdByCode("SAW");
-    var path = yield test(4, start.toString(), stop.toString());
+    const stop = yield database.getAirportIdByCode("EGLL");
+    var path = yield graphAlgorithm_1.findPath(4, start.toString(), stop.toString());
+    // var path = await test(4, start.toString(), stop.toString());
     // if (path.includes("path from")) {
     //   console.log("path is not possible with 3 stops");
     // } else {
