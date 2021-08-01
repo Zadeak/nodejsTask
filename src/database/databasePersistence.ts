@@ -49,11 +49,11 @@ export async function getRoute(airportId: string): Promise<Route> {
 
   try {
     routeDbEntryArray = await routesDao.get(airportId);
-    logger.debug("found in routeObject table");
+    logger.debug("found in routeDao table");
 
     return routeDbEntryArray;
   } catch (e) {
-    logger.debug(airportId + " not found in routeObject Table");
+    logger.debug(airportId + " not found in routeDao Table");
 
   }
 

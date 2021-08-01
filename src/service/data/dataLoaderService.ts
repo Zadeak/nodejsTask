@@ -1,6 +1,7 @@
+import { routesDao } from "../../database/databasePersistence";
 import { delay } from "../../helperfunctions";
 import { logger } from "../../logger";
-import { asyncWriteAirportsDataFromFile, asyncWriteRoutesDataFromFile, counter } from "./dataLoader";
+import { asyncWriteAirportsDataFromFile, asyncWriteRoutesDataFromFile, counter, writeRoutesDao } from "./dataLoader";
 
 
 export async function loadData(){
@@ -9,7 +10,8 @@ export async function loadData(){
     while (counter < 67000) {
       await delay(1000);
     }
-    logger.debug("data is loaded");
+    await writeRoutesDao();
+    logger.info("data is loaded");
 }
 
 

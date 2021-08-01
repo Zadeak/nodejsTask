@@ -1,11 +1,1 @@
-2021/08/01-18:05:21.781 3bf4 Recovering log #81
-2021/08/01-18:05:21.781 3bf4 Level-0 table #84: started
-2021/08/01-18:05:21.785 3bf4 Level-0 table #84: 25785 bytes OK
-2021/08/01-18:05:21.793 3bf4 Delete type=0 #81
-2021/08/01-18:05:21.793 3bf4 Delete type=3 #79
-2021/08/01-18:05:24.758 4e6c Compacting 1@0 + 1@1 files
-2021/08/01-18:05:24.764 4e6c Generated table #86@0: 1367 keys, 133225 bytes
-2021/08/01-18:05:24.764 4e6c Compacted 1@0 + 1@1 files => 133225 bytes
-2021/08/01-18:05:24.766 4e6c compacted to: files[ 0 1 0 0 0 0 0 ]
-2021/08/01-18:05:24.766 4e6c Delete type=2 #82
-2021/08/01-18:05:24.766 4e6c Delete type=2 #84
+2021/08/01-20:25:42.630 3bdc Delete type=3 #1

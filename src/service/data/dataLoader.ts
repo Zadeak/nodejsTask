@@ -3,6 +3,8 @@ import * as rd from "readline";
 import * as database from "../../database/databasePersistence";
 export var counter:number = 0;
 
+import{groupBy} from "lodash";
+
 
 
 
@@ -35,6 +37,9 @@ export function asyncWriteAirportsDataFromFile(): Promise<void> {
           Latitude: +latitude,
           Longitude: +longitude,
         });
+        database.airportIdDao.put(nr.toString(),{  Id: nr,
+          IATA: iata,
+          ICAO: icao})
       }
     );
     resolve();
@@ -59,3 +64,25 @@ export function asyncWriteRoutesDataFromFile() {
       resolve(()=>{});
     });
   }
+
+
+  export function writeRoutesDao(){
+    return new Promise(async (resolve)=>{
+      var routesDbArray = await database.routesDirty.find({});
+      var filteredArray = routesDbArray.filter((v,i,a)=>a.indexOf(v)==i).filter((value)=>value.StartAirportId !== "\\N").filter((value)=> value.DestinationAirportId !== "\\N")
+
+      var grouped = groupBy(filteredArray, function(car) {
+        return car.StartAirportId;
+      });
+
+      for (var indexAr in grouped){
+        var tempArr:any = []
+        for(var inderG of grouped[indexAr]){
+          tempArr.push(inderG.DestinationAirportId)
+        }
+        var name = grouped[indexAr][0].StartAirportId;
+        database.routesDao.put(name,{StartAirportId:name,DestinationAirportId: tempArr})
+      }
+    resolve(()=>{});
+  });
+}

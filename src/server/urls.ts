@@ -17,26 +17,6 @@ export function configureUrls(app:any){
     const router = express.Router();
 
 
-
-    //test endpoint
-router.get("/", (req: any, res: any) => {
-  res.send(`${packages.description} - ${packages.version}`);
-});
-
-//test endpoint
-router.get("/test", async (req: any, res: any) => {
-    try {
-      var result = await database.routesDirty.find({
-        where: (route: { StartAirportId: string; }) => route.StartAirportId === "3370",
-      });
-  
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(500).end(error);
-    }
-  });
-
-
   router.post("/post", async (req: any, res:any)=>{
     logger.info("Your request is beign processed. Please wait...");
 
@@ -50,7 +30,7 @@ router.get("/test", async (req: any, res: any) => {
     }
     else {
       logger.info("from: "+ from +" To: "+ to);
-      const response = await findShortestPath(3, from, to);
+      const response = await findShortestPath(4, from, to);
       logger.info(response)
       var message = JSON.stringify(response)
       res.set('content-type', 'application/json');
