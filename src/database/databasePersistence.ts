@@ -1,10 +1,10 @@
 import { Depot } from "depot-db";
 import { routeConverter } from "../service/data/DataConverter";
 import {logger} from "../logger"
-export const airportsDAO = new Depot<Airport>("Airports");
-export const routesDirty = new Depot<RouteDb>("Routes");
-export const routesDao = new Depot<Route>("RouteObjecs");
-export const airportIdDao = new Depot<AirportId>("airportId");
+export const airportsDAO = new Depot<Airport>("tables/airports");
+export const routesDirty = new Depot<RouteDb>("tables/routes");
+export const routesDao = new Depot<Route>("tables/routeObjecs");
+export const airportIdDao = new Depot<AirportId>("tables/airportId");
 
 
 
