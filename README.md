@@ -1,16 +1,17 @@
-start 1,"Goroka Airport",,"GKA","AYGA",
-end 9,"Kangerlussuaq Airport","SFJ","BGSF"
-3 stop in between 
+Example route:
+Start 1,"Goroka Airport",,"GKA","AYGA".
+End 9,"Kangerlussuaq Airport","SFJ","BGSF".
+3 stops in between/4 flights total. 
 Used for airport and routes between them -> https://openflights.org/data.html 
 1) airports ->  https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat
 2) routes - > https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat
 
-pre-load data into embedded db tables. Then query them to get information needed
+Pre-load data into embedded db tables. Then query them to get information needed.
 There are a few tables. 
-routesDirty: start airport id(set by openflights.org) -> end airport id
-routesDao: airportId -> array of all destination airports id
-airportDao -> airport data by id(openflights)
-airportsIdDao -> airport id(openflights), ICAO, IATA
+routesDirty: start airport id(set by openflights.org) -> end airport id.
+routesDao: airportId -> array of all destination airports id.
+airportDao -> airport data by id(openflights).
+airportsIdDao -> airport id(openflights), ICAO, IATA.
 
 
 Main logic in apiService-> graphAlgorithm.
@@ -30,4 +31,4 @@ json post example:
     "to": "SFJ"
 }
 
-endpoints - http://localhost:3000/api/main
+endpoint - http://localhost:3000/api/main
