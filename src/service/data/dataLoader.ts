@@ -12,7 +12,7 @@ function createStreamReader(path: string) {
   return rd.createInterface(fs.createReadStream(path));
 }
 
-export function asyncWriteAirportsDataFromFile() {
+export function asyncWriteAirportsDataFromFile(){
     createStreamReader("./src/resources/airports.dat.txt").on(
       "line",
       async (l: string) => {
@@ -39,9 +39,8 @@ export function asyncWriteAirportsDataFromFile() {
         await database.airportIdDao.put(nr.toString(),{  Id: nr,
           IATA: iata,
           ICAO: icao})
-      }
-    );
-}
+      });
+    }
 
 export function asyncWriteRoutesDataFromFile() {
       createStreamReader("./src/resources/routes.dat.txt").on(
@@ -50,30 +49,33 @@ export function asyncWriteRoutesDataFromFile() {
           var tokens = l.split(",");
           var startAirportId = tokens[3];
           var destinationAirportId = tokens[5];
-          await database.routesDirty.put(startAirportId+":"+destinationAirportId, {
+          database.routesDirty.put(startAirportId+":"+destinationAirportId, {
             StartAirportId: startAirportId.toString(),
             DestinationAirportId: destinationAirportId,
           });
           counter++
         }
       );
-
   }
 
 
-  export async function writeRoutesDao(){
+  export function writeRoutesDao(){
+    return new Promise(async (resolve)=>{
       var routesDbArray = await database.routesDirty.find({});
       var filteredArray = routesDbArray.filter((v,i,a)=>a.indexOf(v)==i).filter((value)=>value.StartAirportId !== "\\N").filter((value)=> value.DestinationAirportId !== "\\N")
 
       var grouped = groupBy(filteredArray, function(car) {
         return car.StartAirportId;
       });
+
       for (var indexAr in grouped){
         var tempArr:any = []
         for(var inderG of grouped[indexAr]){
           tempArr.push(inderG.DestinationAirportId)
         }
         var name = grouped[indexAr][0].StartAirportId;
-        await database.routesDao.put(name,{StartAirportId:name,DestinationAirportId: tempArr})
+        database.routesDao.put(name,{StartAirportId:name,DestinationAirportId: tempArr})
       }
+    resolve(()=>{});
+  });
 }
