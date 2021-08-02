@@ -46,7 +46,7 @@ function readPath(stringArray) {
             const to = stringArray[indexof + 1];
             var coordinates = yield getCoorinates(from, to);
             const distance = calculateDistance({ coordinates });
-            LenghtCounter = +distance;
+            LenghtCounter = LenghtCounter + distance;
         }
         var totalDistanceString = LenghtCounter.toFixed((2));
         var totalDistance = Number.parseFloat(totalDistanceString);

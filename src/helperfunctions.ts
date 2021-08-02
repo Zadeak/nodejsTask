@@ -19,7 +19,7 @@ export async function readPath(stringArray: string[]): Promise<PathResponse> {
     const to = stringArray[indexof + 1];
     var coordinates = await getCoorinates(from, to);
     const distance = calculateDistance({ coordinates });
-    LenghtCounter = +distance;
+    LenghtCounter = LenghtCounter+distance;
   }
   var totalDistanceString = LenghtCounter.toFixed((2));
   var totalDistance = Number.parseFloat(totalDistanceString);

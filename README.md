@@ -21,8 +21,13 @@ Use them I construct additional nodes(if there is none already in the graph) and
 Check if a path from A to B can be constructed. If not append all added nodes to temp list and increment depth counter. Repeat for all added to temp list nodes until path is found.
 If counter == set depth => it takes more than N stops(3 in this case, but can be changed).
 
+
+Distance between stops are calculated "As the crows fly", from a to b in straight line. Distance is calculated from latitude and longitude.
+
 json post example: 
 {
     "from": "GKA",
     "to": "SFJ"
 }
+
+endpoints - http://localhost:3000/api/main
