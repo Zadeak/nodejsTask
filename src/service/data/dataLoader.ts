@@ -49,7 +49,7 @@ export function asyncWriteRoutesDataFromFile() {
           var tokens = l.split(",");
           var startAirportId = tokens[3];
           var destinationAirportId = tokens[5];
-          database.routesDirty.put(startAirportId+":"+destinationAirportId, {
+          await database.routesDirty.put(startAirportId+":"+destinationAirportId, {
             StartAirportId: startAirportId.toString(),
             DestinationAirportId: destinationAirportId,
           });
@@ -74,7 +74,7 @@ export function asyncWriteRoutesDataFromFile() {
           tempArr.push(inderG.DestinationAirportId)
         }
         var name = grouped[indexAr][0].StartAirportId;
-        database.routesDao.put(name,{StartAirportId:name,DestinationAirportId: tempArr})
+        await database.routesDao.put(name,{StartAirportId:name,DestinationAirportId: tempArr})
       }
     resolve(()=>{});
   });
