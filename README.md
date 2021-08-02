@@ -20,3 +20,9 @@ Then I query db tables and find all possible destination points.
 Use them I construct additional nodes(if there is none already in the graph) and lay paths with distance in KM.
 Check if a path from A to B can be constructed. If not append all added nodes to temp list and increment depth counter. Repeat for all added to temp list nodes until path is found.
 If counter == set depth => it takes more than N stops(3 in this case, but can be changed).
+
+json post example: 
+{
+    "from": "GKA",
+    "to": "SFJ"
+}

@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "lite-server",
     "nodemon": "nodemon",
-    "algo": "node dist/databaseAlgo.js"
+    "index": "node dist/index.js"
   },
   "author": "",
   "license": "ISC",

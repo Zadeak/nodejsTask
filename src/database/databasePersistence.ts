@@ -6,6 +6,10 @@ export const routesDirty = new Depot<RouteDb>("Routes");
 export const routesDao = new Depot<Route>("RouteObjecs");
 export const airportIdDao = new Depot<AirportId>("airportId");
 
+
+
+//airport
+
 export async function getAirportIdByCode(airportCode: string): Promise<string> {
   try {
     const airportData = await airportIdDao.find({
@@ -44,6 +48,28 @@ export async function getAirportIdByCode(airportCode: string): Promise<string> {
   return airportId.toString();
 }
 
+export async function getAirportDataByCode(airportId: string) {
+  var airportData;
+  airportData = await airportsDAO.find({
+    where: (airport) => airport.IATA === airportId,
+  });
+
+  if (airportData.length === 0) {
+    airportData = await airportsDAO.find({
+      where: (airport) => airport.ICAO === airportId,
+    });
+  }
+
+  return airportData;
+}
+export async function getAirportDataById(airportId: number) {
+  const airportData = await airportsDAO.get(airportId.toString());
+  return airportData;
+}
+
+
+
+// Routes
 export async function getRoute(airportId: string): Promise<Route> {
   var routeDbEntryArray: any;
 
@@ -67,26 +93,6 @@ export async function getRoute(airportId: string): Promise<Route> {
   }
   return routeConverter(routeDbEntryArray);
 }
-
-export async function getAirportDataByCode(airportId: string) {
-  var airportData;
-  airportData = await airportsDAO.find({
-    where: (airport) => airport.IATA === airportId,
-  });
-
-  if (airportData.length === 0) {
-    airportData = await airportsDAO.find({
-      where: (airport) => airport.ICAO === airportId,
-    });
-  }
-
-  return airportData;
-}
-export async function getAirportDataById(airportId: number) {
-  const airportData = await airportsDAO.get(airportId.toString());
-  return airportData;
-}
-
 export async function writeRoutes(
   startAirportId: string,
   destinationAirportId: string

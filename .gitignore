@@ -4,4 +4,7 @@ Routes
 people
 vscode
 dist
-RouteObjects
+.dist
+RouteObjecs
+airportId
+.airportId
