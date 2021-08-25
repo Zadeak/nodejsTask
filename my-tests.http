@@ -5,6 +5,6 @@ POST http://localhost:3000/api/post HTTP/1.1
 content-type: application/json
 
 {
-    "from": "GKA",
-    "to": "SFJ"
+    "from": "TLL",
+    "to": "LHR"
 }
