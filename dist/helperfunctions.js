@@ -70,15 +70,6 @@ function getCoorinates(startingPoint, destinationPoint) {
     });
 }
 exports.getCoorinates = getCoorinates;
-// export async function addEdges(graph: Graph, point: Route) {
-//   for (var it of point.DestinationAirportId) {
-//     graph.addNode(it);
-//     var coordinates = await getCoorinates(point.StartAirportId, it);
-//     graph.addEdge(point.StartAirportId, it, {
-//       weight: calculateDistance({ coordinates }),
-//     });
-//   }
-// }
 function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
