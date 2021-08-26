@@ -1,81 +1,42 @@
 import Graph from "graphology";
 import * as database from "../../database/databasePersistence";
-import { calculateDistance, getCoorinates,} from "../../helperfunctions";
+import { calculateDistance, getCoorinates } from "../../helperfunctions";
 import { dijkstra } from "graphology-shortest-path";
 import { logger } from "../../logger";
 
-export async function findPath( depth: number, startingPoint: string, endpoint: string){
+export async function findPath(startingPoint: string, endpoint: string) {
   const graph = new Graph();
+  const visited = new Set<string>();
+  const createdGraph = await constructGrap([startingPoint], graph, visited);
 
-  var depthCounter = 0;
-  var tempListSize = 0;
+  try {
+    const path = dijkstra.bidirectional(createdGraph, startingPoint, endpoint, "weight");
+    return { message: path, codes: [startingPoint, endpoint] };
+  } catch (error) {
+    return { message: ["no path"], codes: [startingPoint, endpoint] };
+  }
+}
+export async function constructGrap(toVisitList: Array<string>, graph: Graph, visited: Set<String>, depth: number = 0): Promise<Graph> {
+  if (depth === 5) return graph;
+  let current = toVisitList;
+  toVisitList = [];
 
-  const startPoint = await database.getRoute(startingPoint);
-
-  var nodeList: Array<Route> = [startPoint];
-  var tempList: Array<Route> = [];
-  graph.addNode(startPoint.StartAirportId);
-
-  while (depthCounter != depth) {
-    for (var entry of nodeList.slice(-tempListSize)) {
-      var extractedRoutes = entry.DestinationAirportId;
-      for (var route of extractedRoutes) {
-        //move to function
-        try {
-          graph.addNode(route);
-        } catch (error) {
-          continue;
-        }
-
-        var newRoute: Route;
-        try {
-          newRoute = await database.getRoute(route);
-        } catch (error) {
-          logger.debug("route:" + route + "does not have any other routes to go to");
-          continue;
-        }
-        var coordinates: Coordinates;
-        try {
-          coordinates = await getCoorinates(entry.StartAirportId, route);
-        } catch (error) {
-            logger.debug("airport is absent in airport.dat by airportId in routes.dat file");
-
-            coordinates = { firstlat: 1, firstlon: 1, secondlat: 1, secondlon: 1};
-        }
-        if (
-          coordinates.firstlat === 1 &&
-          coordinates.firstlon === 1 &&
-          coordinates.secondlat === 1
-        ) {
-          continue;
-        }
-        //move to fun?
-        graph.addEdge(entry.StartAirportId, route, {
-          weight: calculateDistance({ coordinates }),
-        });
-
-        //move to function
-
-        tempList.push(newRoute);
-        try {
-          const path = dijkstra.bidirectional(
-            graph,
-            startPoint.StartAirportId,
-            endpoint,
-            "weight"
-          );
-          return {message:path.toString(), codes: [startingPoint,endpoint], steps:depth};
-        } catch (error) {
-          // console.log("Path cannot be created yet")
-          continue;
-        }
+  for (let tovisit of current) {
+    const route = await database.getRoute(tovisit);
+    try {
+      var neig = route.DestinationAirportId;
+    } catch (error) {
+      visited.add(tovisit);
+      continue;
+    }
+    for (let neighbor of neig) {
+      graph.mergeEdge(tovisit, neighbor.key, { weight: neighbor.value });
+      if (!visited.has(neighbor.key)) {
+        toVisitList.push(neighbor.key);
       }
     }
-    var tempListSize = tempList.length;
-    nodeList.push.apply(nodeList, tempList);
-    tempList = [];
-    depthCounter++;
+    visited.add(tovisit);
   }
-  //check if path exist
-  return {message: `path from ${startingPoint} to ${endpoint} is not found`, codes: [startingPoint,endpoint], steps:depth};
+  depth++;
+  return constructGrap(toVisitList, graph, visited, depth);
 }

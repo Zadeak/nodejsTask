@@ -17,5 +17,6 @@ const dataLoaderService_1 = require("./service/data/dataLoaderService");
     yield dataLoaderService_1.loadData();
     yield server_1.launcher();
     yield logger_1.logger.info("ready");
+    console.log("ready");
 }))();
 //# sourceMappingURL=index.js.map

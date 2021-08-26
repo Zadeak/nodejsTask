@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "lite-server",
+    "start": "dist/index.js",
     "nodemon": "nodemon",
     "algo": "node dist/databaseAlgo.js",
     "tests": "node dist/test.js"

@@ -1,6 +1,6 @@
 import { Depot } from "depot-db";
-import { routeConverter } from "../service/data/DataConverter";
-import {logger} from "../logger"
+// import { routeConverter } from "../service/data/DataConverter";
+import { logger } from "../logger";
 export const airportsDAO = new Depot<Airport>("Airports");
 export const routesDirty = new Depot<RouteDb>("Routes");
 export const routesDao = new Depot<Route>("RouteObjecs");
@@ -11,13 +11,11 @@ export async function getAirportIdByCode(airportCode: string): Promise<string> {
     const airportData = await airportIdDao.find({
       where: (airport) => airport.IATA === airportCode,
     });
-    logger.debug( `found airport by code IATA: ${airportCode} in AirportId table`);
-
+    logger.debug(`found airport by code IATA: ${airportCode} in AirportId table`);
 
     return airportData[0].Id.toString();
   } catch (error) {
-    logger.debug( `airport code IATA ${airportCode} is not found in airportIdDao`);
-
+    logger.debug(`airport code IATA ${airportCode} is not found in airportIdDao`);
   }
   try {
     const airportData = await airportIdDao.find({
@@ -27,7 +25,7 @@ export async function getAirportIdByCode(airportCode: string): Promise<string> {
 
     return airportData[0].Id.toString();
   } catch (error) {
-    logger.debug( `airport code ICAO ${airportCode} is not found in airportIdDao`);
+    logger.debug(`airport code ICAO ${airportCode} is not found in airportIdDao`);
   }
 
   const airportDataArray = await getAirportDataByCode(airportCode);
@@ -54,18 +52,9 @@ export async function getRoute(airportId: string): Promise<Route> {
     return routeDbEntryArray;
   } catch (e) {
     logger.debug(airportId + " not found in routeDao Table");
-
   }
 
-  try {
-    routeDbEntryArray = await routesDirty.find({
-      where: (route) => route.StartAirportId == airportId,
-    });
-  } catch (e) {
-    logger.debug("Error: "+ e + "Key: " + airportId);
-
-  }
-  return routeConverter(routeDbEntryArray);
+  return routeDbEntryArray;
 }
 
 export async function getAirportDataByCode(airportId: string) {
@@ -87,10 +76,7 @@ export async function getAirportDataById(airportId: number) {
   return airportData;
 }
 
-export async function writeRoutes(
-  startAirportId: string,
-  destinationAirportId: string
-) {
+export async function writeRoutes(startAirportId: string, destinationAirportId: string) {
   await routesDirty.put(startAirportId.toString(), {
     StartAirportId: startAirportId.toString(),
     DestinationAirportId: destinationAirportId,

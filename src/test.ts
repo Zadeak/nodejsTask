@@ -4,20 +4,27 @@ import { text } from "express";
 
 // const graph = new Graph();
 
-// // graph.addNode("1");
-// // graph.addNode("2");
-// // graph.addNode("3");
-// // graph.addNode("4");
-// // graph.addNode("5");
+// // // graph.addNode("1");
+// // // graph.addNode("2");
+// // // graph.addNode("3");
+// // // graph.addNode("4");
+// // // graph.addNode("5");
 
 // graph.mergeEdge("1", "2", { weight: 1 });
-// graph.mergeEdge("2", "3", { weight: 2 });
-// graph.mergeEdge("3", "4", { weight: 3 });
-// graph.mergeEdge("4", "5", { weight: 4 });
-// graph.mergeEdge("1", "5", { weight: 15 });
+// graph.mergeEdge("2", "3", { weight: 1 });
+// graph.mergeEdge("2", "4", { weight: 1 });
+// graph.mergeEdge("4", "2", { weight: 1 });
+// graph.mergeEdge("3", "2", { weight: 1 });
+// graph.mergeEdge("3", "4", { weight: 1 });
+// graph.mergeEdge("4", "3", { weight: 1 });
+// graph.mergeEdge("4", "5", { weight: 1 });
 
-// const path = dijkstra.singleSource(graph, "1", "weight");
+// // const path = dijkstra.singleSource(graph, "1", "weight");
+// const path = dijkstra.bidirectional(graph, "1", "5", "weight");
+// console.log(path);
 
+// -------------------------------
+// algo for creating graph
 type endPoint = {
   key: string;
   value: Number;
@@ -71,19 +78,33 @@ const toVisit = ["a"];
 const graph2 = new Graph();
 const visited = new Set<string>();
 
-const testing = constructGrap(toVisit, graph2, visited, 0, adj);
+const testing = constructGrap2(toVisit, graph2, visited, 0, adj);
 console.log(testing);
 
 const path = dijkstra.bidirectional(testing, "a", "g", "weight");
 console.log(path);
 
-// const adjS: any = {
-//   a: [{ b: 1 }, { c: 2 }],
-// };
-// const newLocal = adjS["a"];
+export function constructGrap2(toVisitList: Array<string>, graph: Graph, visited: Set<String>, depth: number = 0, adj: any): Graph {
+  if (depth === 5) return graph;
+  let current = toVisitList;
+  toVisitList = [];
 
-// console.log(newLocal);
-
-// for (let n of newLocal) {
-//   console.log(n);
-// }
+  // const startPoint = await database.getRoute(toVisitList[0]);
+  // const startPoint = await database.getRoute(toVisitList[0]);
+  for (let tovisit of current) {
+    if (visited.has(tovisit)) {
+      continue;
+    }
+    var neig: Array<endPoint> = adj[tovisit];
+    // var neighbors: Array<pointAndWeight> = adj[tovisit];
+    for (let neighbor of neig) {
+      graph.mergeEdge(tovisit, neighbor.key, { weight: neighbor.value });
+      if (!visited.has(neighbor.key)) {
+        toVisitList.push(neighbor.key);
+      }
+    }
+    visited.add(tovisit);
+  }
+  depth++;
+  return constructGrap2(toVisitList, graph, visited, depth, adj);
+}

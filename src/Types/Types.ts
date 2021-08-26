@@ -14,9 +14,14 @@ type RouteDb = {
   DestinationAirportId: string;
 };
 
+type pointAndWeight = {
+  key: string;
+  value: number;
+};
+
 type Route = {
   StartAirportId: string;
-  DestinationAirportId: Array<string>;
+  DestinationAirportId: Array<pointAndWeight>;
 };
 
 type AirportId = {

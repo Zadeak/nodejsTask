@@ -28,7 +28,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolvePath = exports.delay = exports.addEdges = exports.getCoorinates = exports.calculateDistance = exports.readPath = void 0;
+exports.resolvePath = exports.delay = exports.getCoorinates = exports.calculateDistance = exports.readPath = void 0;
 const database = __importStar(require("./database/databasePersistence"));
 const geodist = require("geodist");
 const logger_1 = require("./logger");
@@ -48,13 +48,13 @@ function readPath(stringArray) {
             const distance = calculateDistance({ coordinates });
             LenghtCounter = +distance;
         }
-        var totalDistanceString = LenghtCounter.toFixed((2));
+        var totalDistanceString = LenghtCounter.toFixed(2);
         var totalDistance = Number.parseFloat(totalDistanceString);
         return { airportsCodes, totalDistance };
     });
 }
 exports.readPath = readPath;
-function calculateDistance({ coordinates, }) {
+function calculateDistance({ coordinates }) {
     return geodist({ lat: coordinates.firstlat, lon: coordinates.firstlon }, { lat: coordinates.secondlat, lon: coordinates.secondlon }, { exact: true, unit: "km" });
 }
 exports.calculateDistance = calculateDistance;
@@ -70,32 +70,29 @@ function getCoorinates(startingPoint, destinationPoint) {
     });
 }
 exports.getCoorinates = getCoorinates;
-function addEdges(graph, point) {
-    return __awaiter(this, void 0, void 0, function* () {
-        for (var it of point.DestinationAirportId) {
-            graph.addNode(it);
-            var coordinates = yield getCoorinates(point.StartAirportId, it);
-            graph.addEdge(point.StartAirportId, it, {
-                weight: calculateDistance({ coordinates }),
-            });
-        }
-    });
-}
-exports.addEdges = addEdges;
+// export async function addEdges(graph: Graph, point: Route) {
+//   for (var it of point.DestinationAirportId) {
+//     graph.addNode(it);
+//     var coordinates = await getCoorinates(point.StartAirportId, it);
+//     graph.addEdge(point.StartAirportId, it, {
+//       weight: calculateDistance({ coordinates }),
+//     });
+//   }
+// }
 function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 exports.delay = delay;
-function resolvePath({ message, codes, steps }) {
+function resolvePath({ message, codes }) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (message.includes("path from")) {
+        if (message.includes("no path")) {
             logger_1.logger.debug(`${message}: this path is not possible with 3 stops`);
             const from = yield database.getAirportDataById(codes[0]);
             const to = yield database.getAirportDataById(codes[1]);
-            return { airportsCodes: [`Flight from: ${from.Name}, IATA: '${from.IATA}', ICAO: '${from.ICAO}' to: ${to.Name}, IATA: '${to.IATA}' ICAO: '${to.ICAO}' is not possible with ${steps - 1} stops`], totalDistance: 0 };
+            return { airportsCodes: [`Flight from: ${from.Name}, IATA: '${from.IATA}', ICAO: '${from.ICAO}' to: ${to.Name}, IATA: '${to.IATA}' ICAO: '${to.ICAO}' is not possible with 5 stops`], totalDistance: 0 };
         }
         else {
-            var distanceData = yield readPath(message.split(","));
+            var distanceData = yield readPath(message);
             distanceData.airportsCodes.forEach((data) => {
                 logger_1.logger.debug(data + "=>");
             });
