@@ -42,6 +42,7 @@ export async function getAirportIdByCode(airportCode: string): Promise<string> {
   return airportId.toString();
 }
 
+// Routes
 export async function getRoute(airportId: string): Promise<Route> {
   var routeDbEntryArray: any;
 

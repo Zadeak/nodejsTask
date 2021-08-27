@@ -3,7 +3,7 @@ const express = require("express");
 const packages = require("../../package.json");
 import * as database from "../database/databasePersistence";
 import { logger } from "../logger";
-import { findShortestPath } from "../service/api/apiService";
+import { findShortestPath } from "../service/api/graphService";
 import { validateInput } from "./inputValidation";
 
 
@@ -17,7 +17,7 @@ export function configureUrls(app:any){
     const router = express.Router();
 
 
-  router.post("/post", async (req: any, res:any)=>{
+  router.post("/main", async (req: any, res:any)=>{
     logger.info("Your request is beign processed. Please wait...");
 
     var from = req.body.from;

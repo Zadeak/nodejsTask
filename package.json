@@ -9,6 +9,7 @@
     "nodemon": "nodemon",
     "algo": "node dist/databaseAlgo.js",
     "tests": "node dist/test.js"
+
   },
   "author": "",
   "license": "ISC",

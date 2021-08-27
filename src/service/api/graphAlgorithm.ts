@@ -5,6 +5,8 @@ import { dijkstra } from "graphology-shortest-path";
 import { logger } from "../../logger";
 
 export async function findPath(startingPoint: string, endpoint: string) {
+  console.log("calculating distance. Please wait...");
+
   const graph = new Graph();
   const visited = new Set<string>();
   const createdGraph = await constructGrap([startingPoint], graph, visited);

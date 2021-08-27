@@ -1,7 +1,7 @@
 # get http://localhost:3000/api/test
 
 
-POST http://localhost:3000/api/post HTTP/1.1
+POST http://localhost:3000/api/main HTTP/1.1
 content-type: application/json
 
 {
